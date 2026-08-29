@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Newsreader, Outfit } from "next/font/google";
+import { Barlow_Condensed, Outfit } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import "./globals.css";
@@ -9,26 +9,26 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
+const barlow = Barlow_Condensed({
+  variable: "--font-barlow",
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "BCC Management",
-    template: "%s · BCC Management",
+    default: "BCC Basketball Federation",
+    template: "%s · BCC Basketball Federation",
   },
   description:
-    "Operations, people, and projects — one workspace for BCC Management.",
+    "The official home of BCC Basketball Federation — competitions, clubs, fixtures, and the national game.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${newsreader.variable} h-full antialiased`}
+      className={`${outfit.variable} ${barlow.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <Header />

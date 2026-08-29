@@ -1,14 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f3ee;
-  --foreground: #14181c;
-  --muted: #5c656e;
-  --card: #fffcf7;
-  --line: #e4ddd3;
-  --accent: #1c6b52;
-  --accent-soft: #e7f3ee;
-  --ink: #0e1512;
+  --background: #f3efe6;
+  --foreground: #16181d;
+  --muted: #5e6570;
+  --card: #fbf8f1;
+  --line: #e2d9c8;
+  --accent: #1f3d73;
+  --accent-soft: #e4ebf6;
+  --ink: #0c1118;
+  --amber: #e0891a;
 }
 
 @theme inline {
@@ -20,8 +21,9 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-ink: var(--ink);
+  --color-amber: var(--amber);
   --font-sans: var(--font-outfit);
-  --font-serif: var(--font-newsreader);
+  --font-display: var(--font-barlow);
 }
 
 body {
@@ -31,6 +33,13 @@ body {
 }
 
 ::selection {
-  background: #cde8dc;
+  background: #f3d19a;
   color: var(--ink);
+}
+
+.hero-court {
+  background-color: var(--ink);
+  background-image:
+    radial-gradient(circle at 50% 120%, transparent 28%, rgba(224, 137, 26, 0.16) 29%, transparent 30%),
+    linear-gradient(90deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.08) 50%, transparent calc(50% + 1px));
 }
