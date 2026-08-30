@@ -38,33 +38,51 @@ export function AdminShell({ title, active, actions, children }: AdminShellProps
             BB ADMIN
           </b>
         </Link>
-        {nav.map((item) => (
-          <div key={item.href}>
-            {item.section ? (
-              <p className="mt-2 px-2 pt-2 pb-1 text-[10px] font-bold tracking-[0.2em] text-[#5B6472] uppercase">
-                {item.section}
-              </p>
-            ) : null}
-            <Link
-              href={item.href}
-              className={`flex items-center gap-2 rounded-[5px] px-2.5 py-1.5 text-[13px] font-semibold ${
-                active === item.href
-                  ? "bg-saffron text-white"
-                  : item.live
-                    ? "text-[#FF7A93]"
-                    : "text-[#A8AFBD] hover:text-white"
-              }`}
-            >
-              <span className="w-3 text-center opacity-80">{item.icon}</span>
-              {item.label}
-              {item.live ? (
-                <span className="ml-auto rounded-lg bg-live px-1.5 text-[10px] text-white">
-                  1
-                </span>
+        <div className="flex min-h-0 flex-1 flex-col gap-px overflow-y-auto">
+          {nav.map((item) => (
+            <div key={item.href}>
+              {item.section ? (
+                <p className="mt-2 px-2 pt-2 pb-1 text-[10px] font-bold tracking-[0.2em] text-[#5B6472] uppercase">
+                  {item.section}
+                </p>
               ) : null}
-            </Link>
-          </div>
-        ))}
+              <Link
+                href={item.href}
+                className={`flex items-center gap-2 rounded-[5px] px-2.5 py-1.5 text-[13px] font-semibold ${
+                  active === item.href
+                    ? "bg-saffron text-white"
+                    : item.live
+                      ? "text-[#FF7A93]"
+                      : "text-[#A8AFBD] hover:text-white"
+                }`}
+              >
+                <span className="w-3 text-center opacity-80">{item.icon}</span>
+                {item.label}
+                {item.live ? (
+                  <span className="ml-auto rounded-lg bg-live px-1.5 text-[10px] text-white">
+                    1
+                  </span>
+                ) : null}
+              </Link>
+            </div>
+          ))}
+        </div>
+        <div className="mt-auto border-t border-white/10 pt-2">
+          <Link
+            href="/"
+            className="flex items-center gap-2 rounded-[5px] px-2.5 py-1.5 text-[13px] font-semibold text-[#A8AFBD] hover:text-white"
+          >
+            <span className="w-3 text-center opacity-80">⌂</span>
+            Home
+          </Link>
+          <Link
+            href="/admin/login"
+            className="flex items-center gap-2 rounded-[5px] px-2.5 py-1.5 text-[13px] font-semibold text-[#A8AFBD] hover:text-white"
+          >
+            <span className="w-3 text-center opacity-80">↩</span>
+            Sign out
+          </Link>
+        </div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-center gap-2.5 border-b border-line bg-white px-4 py-2">
