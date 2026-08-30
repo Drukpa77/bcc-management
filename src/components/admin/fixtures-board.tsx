@@ -18,10 +18,18 @@ export function FixturesBoard() {
 
   return (
     <div>
-      <div className="mb-3 text-[13px] text-muted">
-        {rows.length
-          ? `${rows.length} fixtures for ${league?.name}`
-          : "No fixtures yet — generate them after the pool draw."}
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[13px] text-muted">
+          {rows.length
+            ? `${rows.length} fixtures for ${league?.name}`
+            : "No fixtures yet — generate them after the pool draw."}
+        </p>
+        <Link
+          href="/admin/fixtures/generate"
+          className="inline-flex h-10 items-center rounded-xl bg-saffron px-3 text-[13px] font-semibold text-white"
+        >
+          Create fixture
+        </Link>
       </div>
       <div className="overflow-x-auto rounded-lg border border-line bg-white">
         <table className="w-full min-w-[720px] text-left text-[13px]">

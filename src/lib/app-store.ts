@@ -343,9 +343,9 @@ export function discardDraw(store: AppStore, leagueId: string): AppStore {
   return { ...store, draws, fixtures };
 }
 
-type RoundGame = { home: string; away: string; round: number };
+export type RoundGame = { home: string; away: string; round: number };
 
-function roundRobin(teamIds: string[]): RoundGame[] {
+export function roundRobin(teamIds: string[]): RoundGame[] {
   const teams = [...teamIds];
   if (teams.length < 2) {
     return [];

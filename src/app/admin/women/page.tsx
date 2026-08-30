@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
-import { AdminShell } from "@/components/admin/admin-shell";
 import { StandingsManager } from "@/components/admin/standings-manager";
+import { UseActiveLeague } from "@/components/admin/use-active-league";
 
 export const metadata: Metadata = { title: "Women's Championship" };
 
 export default function AdminWomenPage() {
   return (
-    <AdminShell title="Women" active="/admin/women">
-      <p className="mb-4 text-[13px] text-muted">
-        Switch the league selector to Women&apos;s Championship to manage that table, results, and qualification.
-      </p>
+    <UseActiveLeague leagueId="womens-championship">
       <StandingsManager />
-    </AdminShell>
+    </UseActiveLeague>
   );
 }
