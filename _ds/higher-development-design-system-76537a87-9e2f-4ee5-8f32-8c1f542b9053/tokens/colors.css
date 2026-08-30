@@ -1,0 +1,114 @@
+/* ============================================================
+   COLORS — Higher Development
+   Base palette (Tailwind-derived, exactly as used in the product)
+   plus brand mark color and semantic aliases.
+   ============================================================ */
+:root {
+  /* ---- Brand ---- */
+  --brand-cyan: #1796c6;        /* the HD monogram mark */
+  --brand-cyan-ink: #0f6f96;
+
+  /* ---- Rose (primary accent — eyebrows, gradients, danger) ---- */
+  --rose-50: #fff1f2;
+  --rose-100: #ffe4e6;
+  --rose-200: #fecdd3;
+  --rose-300: #fda4af;
+  --rose-400: #fb7185;
+  --rose-500: #f43f5e;
+  --rose-600: #e11d48;
+  --rose-700: #be123c;
+  --rose-900: #9f1239;
+
+  /* ---- Blue (headings, deep sections, links) ---- */
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-300: #93c5fd;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --blue-900: #1e3a8a;
+  --blue-950: #172554;
+
+  /* ---- Violet (payment-stage tone, sidebar active end) ---- */
+  --violet-50: #f5f3ff;
+  --violet-200: #ddd6fe;
+  --violet-500: #8b5cf6;
+  --violet-600: #7c3aed;
+  --violet-700: #6d28d9;
+
+  /* ---- Emerald (success / visa granted) ---- */
+  --emerald-50: #ecfdf5;
+  --emerald-200: #a7f3d0;
+  --emerald-500: #10b981;
+  --emerald-700: #047857;
+
+  /* ---- Amber (warning / in-progress) ---- */
+  --amber-50: #fffbeb;
+  --amber-200: #fde68a;
+  --amber-500: #f59e0b;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+
+  /* ---- Slate (neutrals — text, borders, surfaces) ---- */
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-950: #020617;
+
+  /* ============================================================
+     SEMANTIC ALIASES
+     ============================================================ */
+  --background: #f8fafc;          /* app + page background */
+  --foreground: #111827;          /* default text ink */
+
+  --surface-card: #ffffff;
+  --surface-muted: var(--slate-50);
+  --surface-glass: rgba(255, 255, 255, 0.86);   /* backdrop-blur panels */
+
+  --border-default: var(--slate-200);
+  --border-strong: var(--slate-300);
+  --border-accent: rgba(251, 113, 133, 0.25);   /* rose, portal-theme */
+
+  --text-heading: var(--blue-900);
+  --text-body: var(--slate-600);
+  --text-muted: var(--slate-500);
+  --text-eyebrow: var(--rose-500);
+  --text-on-dark: #ffffff;
+
+  --link: var(--blue-700);
+  --link-hover: var(--blue-900);
+
+  --focus-ring: var(--blue-500);
+
+  /* Tones — status/stage chips (bg / fg / border) */
+  --tone-neutral-bg: var(--slate-100);
+  --tone-neutral-fg: var(--slate-700);
+  --tone-info-bg: var(--blue-50);
+  --tone-info-fg: var(--blue-700);
+  --tone-progress-bg: var(--amber-50);
+  --tone-progress-fg: var(--amber-800);
+  --tone-payment-bg: var(--violet-50);
+  --tone-payment-fg: var(--violet-700);
+  --tone-success-bg: var(--emerald-50);
+  --tone-success-fg: var(--emerald-700);
+  --tone-danger-bg: var(--rose-50);
+  --tone-danger-fg: var(--rose-700);
+
+  /* ---- Signature gradients ---- */
+  --gradient-primary: linear-gradient(90deg, var(--rose-500), var(--blue-600)); /* CTAs @kind color */
+  --gradient-active: linear-gradient(135deg, var(--blue-600), var(--violet-600)); /* sidebar active @kind color */
+  --gradient-chat: linear-gradient(90deg, var(--rose-400), #60a5fa); /* chat FAB + headers @kind color */
+  --gradient-hero: linear-gradient(to right, rgba(30,58,138,0.85), rgba(30,58,138,0.55) 55%, rgba(30,58,138,0.25)); /* @kind color */
+  --portal-wash:
+    radial-gradient(circle at 10% 10%, rgba(244, 63, 94, 0.12), transparent 35%),
+    radial-gradient(circle at 90% 20%, rgba(59, 130, 246, 0.12), transparent 35%),
+    #f8fafc; /* @kind color */
+}

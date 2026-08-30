@@ -1,0 +1,40 @@
+/* ============================================================
+   TYPOGRAPHY — Higher Development
+   Geist for everything; Geist Mono for numeric / code.
+   Scale mirrors the Tailwind steps used across the product.
+   ============================================================ */
+:root {
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* Weights */
+  --fw-regular: 400;   /* @kind font */
+  --fw-medium: 500;    /* @kind font */
+  --fw-semibold: 600;  /* @kind font */
+  --fw-bold: 700;      /* @kind font */
+  --fw-extrabold: 800; /* @kind font */
+
+  /* Type scale (rem) */
+  --text-xs: 0.75rem;      /* 12 — meta, badges, eyebrows */
+  --text-sm: 0.875rem;     /* 14 — body-small, UI labels */
+  --text-base: 1rem;       /* 16 — body */
+  --text-lg: 1.125rem;     /* 18 */
+  --text-xl: 1.25rem;      /* 20 — card titles */
+  --text-2xl: 1.5rem;      /* 24 — section sub-heads */
+  --text-3xl: 1.875rem;    /* 30 — h2 */
+  --text-4xl: 2.25rem;     /* 36 — h1 */
+  --text-hero: clamp(2.2rem, 5.5vw, 4rem);   /* fluid marketing hero */
+  --text-section: clamp(1.5rem, 3.2vw, 2.4rem); /* fluid section title */
+
+  /* Line heights */
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  /* Letter spacing */
+  --tracking-tight: -0.01em;   /* headings */
+  --tracking-normal: 0;
+  --tracking-eyebrow: 0.22em;  /* uppercase eyebrows */
+  --tracking-label: 0.12em;    /* small caps labels */
+}

@@ -1,0 +1,31 @@
+/* ============================================================
+   SPACING & RADII — Higher Development
+   4px base grid; radii mirror the product's rounded-* usage.
+   ============================================================ */
+:root {
+  /* Spacing scale */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4 */
+  --space-2: 0.5rem;    /* 8 */
+  --space-3: 0.75rem;   /* 12 */
+  --space-4: 1rem;      /* 16 */
+  --space-5: 1.25rem;   /* 20 — card padding */
+  --space-6: 1.5rem;    /* 24 — section gap */
+  --space-8: 2rem;      /* 32 */
+  --space-10: 2.5rem;   /* 40 */
+  --space-12: 3rem;     /* 48 */
+  --space-16: 4rem;     /* 64 */
+
+  /* Radii */
+  --radius-sm: 0.25rem;   /* marketing buttons */
+  --radius-md: 0.5rem;    /* inputs, small cards (rounded-lg) */
+  --radius-lg: 0.75rem;   /* cards, sidebar links (rounded-xl) */
+  --radius-xl: 1rem;      /* panels (rounded-2xl) */
+  --radius-2xl: 1.5rem;   /* login shell (rounded-3xl) */
+  --radius-full: 9999px;  /* pills, badges, avatars, nav */
+
+  /* Layout */
+  --container-marketing: 1180px;
+  --container-app: 1400px;
+  --sidebar-width: 16rem;
+}

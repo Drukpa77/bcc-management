@@ -1,0 +1,5 @@
+/* Fonts — Geist & Geist Mono.
+   Loaded from Google Fonts (the app ships Geist via next/font).
+   SUBSTITUTION NOTE: served from Google Fonts CDN rather than bundled
+   binaries — swap the @import for self-hosted @font-face if you need offline. */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap');

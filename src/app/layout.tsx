@@ -1,39 +1,48 @@
 import type { Metadata } from "next";
-import { Barlow_Condensed, Outfit } from "next/font/google";
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
+import { Barlow, Barlow_Condensed, JetBrains_Mono } from "next/font/google";
+import { Flags } from "@/components/brand/flags";
+import { PublicFooter } from "@/components/public/public-footer";
+import { PublicNav } from "@/components/public/public-nav";
 import "./globals.css";
 
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-});
-
-const barlow = Barlow_Condensed({
+const barlow = Barlow({
   variable: "--font-barlow",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-barlow-condensed",
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+});
+
+const jetbrains = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "BCC Basketball Federation",
-    template: "%s · BCC Basketball Federation",
+    default: "Bhutan National Basketball Championship 2026",
+    template: "%s · Bhutan Basketball",
   },
   description:
-    "The official home of BCC Basketball Federation — competitions, clubs, fixtures, and the national game.",
+    "Official tournament platform of the Bhutan Basketball Federation — fixtures, standings, live scores, and the road to Changlimithang.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${barlow.variable} h-full antialiased`}
+      className={`${barlow.variable} ${barlowCondensed.variable} ${jetbrains.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-background text-foreground">
-        <Header />
+      <body className="flex min-h-full flex-col bg-paper font-sans text-ink-2">
+        <Flags />
+        <PublicNav />
         <main className="flex flex-1 flex-col">{children}</main>
-        <Footer />
+        <PublicFooter />
       </body>
     </html>
   );

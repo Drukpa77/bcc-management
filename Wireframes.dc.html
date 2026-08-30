@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EDEAE3;font-family:Barlow,system-ui,sans-serif}
+a{color:#E8611C}a:hover{color:#B3441A}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 14px/1.2 system-ui,sans-serif;color:#1a1a1a}
+.dv-opts{display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}
+.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:10px;box-shadow:0 2px 8px rgba(20,20,30,.1);overflow:hidden}
+.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+.dv-grp{flex-basis:100%;font:700 12px ui-monospace,monospace;letter-spacing:.2em;color:rgba(0,0,0,.45);margin:16px 0 -14px}
+/* ---- hi-fi vocabulary ---- */
+.scr{width:860px;background:#F7F5F1;font:11px/1.45 Barlow;color:#1B2129}
+.m{width:236px;background:#F7F5F1;font:10px/1.4 Barlow;color:#1B2129}
+.bc{font-family:"Barlow Condensed"}
+.mono{font-family:"JetBrains Mono";font-weight:700}
+.flags{height:3px;background:linear-gradient(90deg,#2E5EAA 0 20%,#E9EDF3 20% 40%,#D64545 40% 60%,#3E8E5A 60% 80%,#F0B429 80%)}
+.pnav{display:flex;align-items:center;gap:13px;padding:9px 18px;background:#161B26;color:#fff}
+.pnav a{color:#B9C0CD;font:600 10px Barlow;text-decoration:none;text-transform:uppercase;letter-spacing:.07em}
+.pnav a.on{color:#F0B429;border-bottom:2px solid #F0B429;padding-bottom:2px}
+.mark{width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#F08A4B,#D2531A 70%);display:grid;place-items:center;font:800 9px "Barlow Condensed";color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35);flex:none}
+.wordmark{font:700 14px "Barlow Condensed";letter-spacing:.05em}
+.wordmark small{display:block;font:600 6.5px Barlow;letter-spacing:.28em;color:#F0B429;margin-top:-2px}
+.b{display:inline-flex;align-items:center;gap:5px;border-radius:5px;padding:4px 12px;font:600 10.5px Barlow;white-space:nowrap;border:1px solid transparent}
+.b.o{background:#E8611C;color:#fff;box-shadow:0 2px 6px rgba(232,97,28,.35)}
+.b.dk{background:#1B2129;color:#fff}
+.b.gh{border-color:#C9CDD6;color:#39404C;background:#fff}
+.b.ghd{border-color:rgba(255,255,255,.35);color:#fff;background:transparent}
+.b.dngr{background:#fff;border-color:#E5B3B3;color:#B3282D}
+.b.sm{padding:2px 8px;font-size:9.5px}
+.b.lg{padding:7px 18px;font-size:12px}
+.badge{display:inline-block;border-radius:3px;padding:1px 6px;font:700 8px Barlow;letter-spacing:.12em}
+.bLive{background:#E11D48;color:#fff;animation:none}
+.bFin{background:#E4E7EC;color:#4A5262}
+.bUp{border:1px solid #AEB6C2;color:#5B6472;background:#fff}
+.bReg{background:#DCEBDD;color:#276438}
+.bDone{background:#161B26;color:#F0B429}
+.dot{width:5px;height:5px;border-radius:50%;background:#fff;display:inline-block;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.k{font:700 10px "Barlow Condensed";letter-spacing:.22em;color:#E8611C;text-transform:uppercase}
+.h1{font:800 30px/1 "Barlow Condensed";letter-spacing:.01em;text-transform:uppercase}
+.h2{font:700 17px/1.1 "Barlow Condensed";letter-spacing:.03em;text-transform:uppercase}
+.h3{font:700 13px/1.1 "Barlow Condensed";letter-spacing:.05em;text-transform:uppercase}
+.card{background:#fff;border:1px solid #E3E1DA;border-radius:8px}
+.pad{padding:12px 14px}
+.r{display:flex;align-items:center;gap:8px;min-width:0}
+.sb{justify-content:space-between}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.grow{flex:1;min-width:0}
+.mut{color:#6B7280}
+.tiny{font-size:9px}
+.tt{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 8px "Barlow Condensed";color:#fff;flex:none;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)}
+.tt.lg{width:44px;height:44px;font-size:13px}
+.tt.xl{width:64px;height:64px;font-size:19px}
+.score{font-family:"JetBrains Mono";font-weight:800;font-size:22px;letter-spacing:-.02em}
+.st{width:100%;border-collapse:collapse;font-size:10px}
+.st th{font:700 8.5px Barlow;letter-spacing:.1em;text-align:left;padding:5px 8px;background:#161B26;color:#AEB6C2;text-transform:uppercase}
+.st th.n,.st td.n{text-align:right}
+.st td{padding:5px 8px;border-bottom:1px solid #EEECE6;white-space:nowrap;background:#fff}
+.st td.n{font-family:"JetBrains Mono";font-weight:600;font-size:9.5px}
+.st tr.q td{background:#FDF3EC;border-left:none}
+.st tr.q td:first-child{box-shadow:inset 3px 0 0 #E8611C}
+.pos{font:700 10px "Barlow Condensed";width:16px;display:inline-block}
+.fw,.fl{width:12px;height:12px;border-radius:3px;display:inline-grid;place-items:center;font:700 7px Barlow;flex:none}
+.fw{background:#2F855A;color:#fff}
+.fl{background:#E4E7EC;color:#7A828F}
+.chip{border:1px solid #C9CDD6;border-radius:999px;padding:2px 10px;font:600 9.5px Barlow;color:#4A5262;background:#fff;white-space:nowrap}
+.chip.on{background:#161B26;color:#F0B429;border-color:#161B26}
+.sel{border:1px solid #C9CDD6;border-radius:5px;padding:3px 8px;font:600 9.5px Barlow;color:#4A5262;background:#fff;white-space:nowrap}
+.sel:after{content:" ▾"}
+.hero{position:relative;background:linear-gradient(120deg,#161B26 30%,#25304a 85%);color:#fff;overflow:hidden}
+.mtns{position:absolute;left:0;right:0;bottom:0;opacity:.35}
+.arc{position:absolute;border:1.5px solid rgba(240,180,41,.18);border-radius:50%}
+.dz{height:5px;background:repeating-linear-gradient(90deg,#E8611C 0 10px,#F0B429 10px 14px,#161B26 14px 24px,#F0B429 24px 28px)}
+.dhdr{background:#161B26;color:#fff;padding:14px 18px;position:relative;overflow:hidden}
+.aside{width:148px;background:#161B26;color:#A8AFBD;padding:10px 8px;display:flex;flex-direction:column;gap:1px;flex:none;align-self:stretch}
+.ai{display:flex;align-items:center;gap:7px;padding:4.5px 9px;border-radius:5px;font:600 9.5px Barlow;white-space:nowrap}
+.ai.on{background:#E8611C;color:#fff}
+.ai .ic{width:11px;text-align:center;opacity:.8}
+.asec{font:700 7.5px Barlow;letter-spacing:.2em;color:#5B6472;padding:8px 9px 3px;text-transform:uppercase}
+.abar{display:flex;align-items:center;gap:10px;padding:8px 16px;background:#fff;border-bottom:1px solid #E3E1DA}
+.kpi{flex:1;min-width:0;background:#fff;border:1px solid #E3E1DA;border-radius:8px;padding:9px 11px}
+.kpi .v{font:800 20px "Barlow Condensed"}
+.kpi .l{font:600 8px Barlow;letter-spacing:.14em;color:#8A909C;text-transform:uppercase}
+.fld{border:1px solid #C9CDD6;border-radius:5px;padding:4px 9px;font:500 10px Barlow;color:#9AA1AD;background:#fff}
+.lbl{font:700 8px Barlow;letter-spacing:.1em;color:#5B6472;text-transform:uppercase}
+.icon{font-size:11px;line-height:1}
+.bm{background:#fff;border:1px solid #E3E1DA;border-radius:7px;width:168px;font-size:10px;overflow:hidden}
+.bm .hd{display:flex;justify-content:space-between;align-items:center;padding:3px 8px;background:#F1EFE9;font:700 7.5px Barlow;letter-spacing:.12em;color:#6B7280}
+.bm .rw{display:flex;align-items:center;gap:6px;padding:5px 8px}
+.bm .rw+.rw{border-top:1px solid #F1EFE9}
+.bm .sc{margin-left:auto;font-family:"JetBrains Mono";font-weight:700;font-size:11px}
+.bm .win{font-weight:700}
+.bm .win .sc{color:#E8611C}
+.bm .lose{color:#98A0AC}
+.conn{width:20px;flex:none;align-self:stretch;border-right:1.5px solid #C9B48A;border-top:1.5px solid #C9B48A;border-bottom:1.5px solid #C9B48A;margin:26px 0}
+.conn2{width:20px;flex:none;border-top:1.5px solid #C9B48A;align-self:center}
+.stp{width:20px;height:20px;border-radius:50%;border:1.5px solid #C9CDD6;display:grid;place-items:center;font:700 9px Barlow;color:#8A909C;flex:none;background:#fff}
+.stp.on{background:#E8611C;border-color:#E8611C;color:#fff}
+.stp.done{background:#161B26;border-color:#161B26;color:#F0B429}
+.stln{width:34px;border-top:1.5px solid #C9CDD6}
+.wheel{border-radius:50%;position:relative;flex:none;box-shadow:0 6px 24px rgba(0,0,0,.35), inset 0 0 0 6px #F0B429}
+.hub{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:26%;height:26%;border-radius:50%;background:#161B26;display:grid;place-items:center;color:#F0B429;font:800 10px "Barlow Condensed";box-shadow:0 0 0 3px #F0B429}
+.ptr{position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:13px solid #E11D48;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));z-index:2}
+.ph{background:linear-gradient(180deg,#DDE1E7,#C3C9D2);display:grid;place-items:center;color:#8A909C;font:700 16px "Barlow Condensed"}
+.qtr{width:100%;border-collapse:collapse;font-size:9.5px}
+.qtr th{font:700 8px Barlow;letter-spacing:.1em;color:#8A909C;padding:3px 7px;text-align:right}
+.qtr th:first-child{text-align:left}
+.qtr td{padding:3px 7px;text-align:right;font-family:"JetBrains Mono";font-weight:600;border-top:1px solid #EEECE6}
+.qtr td:first-child{text-align:left;font-family:Barlow;font-weight:600}
+.bar{height:5px;border-radius:3px;background:#E4E7EC;overflow:hidden}
+.bar i{display:block;height:100%;background:#E8611C}
+.mnav{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#161B26;color:#fff}
+.tabs{display:flex;gap:2px;background:#fff;border-bottom:2px solid #E3E1DA;padding:0 16px}
+.tab{padding:7px 12px;font:700 10px "Barlow Condensed";letter-spacing:.08em;color:#6B7280;text-transform:uppercase;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab.on{color:#E8611C;border-color:#E8611C}
+.foot{background:#161B26;color:#7A828F;padding:10px 18px;font-size:8.5px;display:flex;justify-content:space-between;align-items:center}
+.tgl{width:22px;height:12px;border-radius:999px;background:#2F855A;position:relative;flex:none}
+.tgl:after{content:"";position:absolute;right:1.5px;top:1.5px;width:9px;height:9px;border-radius:50%;background:#fff}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Bhutan Basketball — hi-fi wireframes, all 30 screens (+ variations on bracket, live draw, admin dashboard; mobile for key screens)</span></div>
+<p style="font:12px system-ui;color:rgba(0,0,0,.55);margin:0 0 18px;max-width:760px">Identity: deep ink navy + saffron orange + gold, prayer-flag hairline on the public site, dzong-stripe divider on admin, mountain silhouettes behind heroes, court-arc watermarks. Rose is reserved exclusively for LIVE. Couldn't read the bcc-management theme from here — paste its CSS variables and I'll retheme in one pass.</p>
+<div class="dv-opts">
+<div class="dv-grp">PUBLIC — CORE</div>
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Home — desktop</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a class="on">Home</a><a>Competitions</a><a>Fixtures</a><a>Standings</a><a>Teams</a><a>Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="hero" style="padding:26px 22px 34px">
+  <div class="arc" style="width:420px;height:420px;right:-160px;top:-220px"></div>
+  <div class="arc" style="width:280px;height:280px;right:-90px;top:-150px"></div>
+  <svg class="mtns" height="54" width="100%" viewBox="0 0 860 54" preserveAspectRatio="none"><path d="M0,54 L90,16 L150,38 L240,6 L330,40 L430,12 L520,36 L610,8 L700,34 L790,18 L860,30 L860,54 Z" fill="#0E1119"></path></svg>
+  <div class="r" style="align-items:flex-start;gap:26px;position:relative">
+    <div class="col grow" style="gap:9px">
+      <span class="k" style="color:#F0B429">10 – 26 SEPTEMBER 2026 · CHANGLIMITHANG COURT, THIMPHU</span>
+      <div class="h1" style="font-size:36px">Bhutan National Basketball<br>Championship 2026</div>
+      <div class="mut" style="color:#B9C0CD;max-width:340px">10 men's teams across two pools. 6 women's teams, round robin. One champion of the Kingdom.</div>
+      <div class="r" style="margin-top:4px"><span class="b o lg">Today's Fixtures</span><span class="b ghd">View Bracket</span></div>
+    </div>
+    <div class="card" style="width:250px;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);backdrop-filter:blur(4px)">
+      <div class="r sb" style="padding:8px 11px;border-bottom:1px solid rgba(255,255,255,.12)"><span class="badge bLive"><span class="dot"></span> LIVE</span><span class="tiny" style="color:#B9C0CD">Men's Pool A · Q4 · 03:42</span></div>
+      <div class="pad col" style="gap:7px">
+        <div class="r sb"><span class="r"><span class="tt" style="background:#E8611C">THW</span><b>Thimphu Warriors</b></span><span class="score" style="color:#F0B429">72</span></div>
+        <div class="r sb"><span class="r"><span class="tt" style="background:#7A1F2B">PDR</span><b>Paro Dragons</b></span><span class="score">68</span></div>
+        <span class="b o" style="justify-content:center">Watch Match Centre →</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="pad r" style="gap:14px;align-items:flex-start;padding:16px 18px">
+  <div class="col grow" style="gap:8px">
+    <div class="r sb"><span class="h3">Upcoming Matches</span><a class="tiny" href="#1e">All fixtures →</a></div>
+    <div class="card"><div class="r sb" style="padding:6px 11px;background:#F1EFE9;border-radius:8px 8px 0 0"><b class="tiny">SATURDAY, 12 SEPTEMBER</b><span class="tiny mut">Changlimithang Court</span></div>
+      <div class="pad col" style="gap:9px;padding-top:9px">
+        <div class="r sb"><span class="mono tiny" style="width:44px">10:00</span><span class="r grow"><span class="tt" style="background:#E8611C">THW</span>Thimphu Warriors <span class="mut">vs</span> <span class="tt" style="background:#7A1F2B">PDR</span>Paro Dragons</span><span class="chip">Men · Pool A</span></div>
+        <div class="r sb"><span class="mono tiny" style="width:44px">12:30</span><span class="r grow"><span class="tt" style="background:#2E5EAA">PNB</span>Punakha Bulls <span class="mut">vs</span> <span class="tt" style="background:#C98A12">HAT</span>Haa Tigers</span><span class="chip">Men · Pool B</span></div>
+        <div class="r sb"><span class="mono tiny" style="width:44px">15:00</span><span class="r grow"><span class="tt" style="background:#A2335C">TQN</span>Thimphu Queens <span class="mut">vs</span> <span class="tt" style="background:#D9652B">PPX</span>Paro Phoenix</span><span class="chip">Women</span></div>
+      </div>
+    </div>
+    <div class="r sb" style="margin-top:4px"><span class="h3">Recent Results</span><a class="tiny" href="#1g">All results →</a></div>
+    <div class="r" style="gap:8px">
+      <div class="card grow pad" style="padding:9px 11px"><div class="r sb"><span class="badge bFin">FINAL</span><span class="tiny mut">11 Sep · Pool A</span></div><div class="r sb" style="margin-top:6px"><span class="r"><span class="tt" style="background:#E8611C">THW</span><b>Thimphu Warriors</b></span><b class="mono" style="color:#E8611C">82</b></div><div class="r sb" style="margin-top:3px"><span class="r mut"><span class="tt" style="background:#7A1F2B">PDR</span>Paro Dragons</span><span class="mono mut">75</span></div></div>
+      <div class="card grow pad" style="padding:9px 11px"><div class="r sb"><span class="badge bFin">FINAL</span><span class="tiny mut">11 Sep · Pool B</span></div><div class="r sb" style="margin-top:6px"><span class="r"><span class="tt" style="background:#C98A12">HAT</span><b>Haa Tigers</b></span><b class="mono" style="color:#E8611C">69</b></div><div class="r sb" style="margin-top:3px"><span class="r mut"><span class="tt" style="background:#5B4A9E">BMF</span>Bumthang Falcons</span><span class="mono mut">64</span></div></div>
+      <div class="card grow pad" style="padding:9px 11px"><div class="r sb"><span class="badge bFin">FINAL</span><span class="tiny mut">10 Sep · Women</span></div><div class="r sb" style="margin-top:6px"><span class="r"><span class="tt" style="background:#A2335C">TQN</span><b>Thimphu Queens</b></span><b class="mono" style="color:#E8611C">58</b></div><div class="r sb" style="margin-top:3px"><span class="r mut"><span class="tt" style="background:#4E7A9E">PPL</span>Punakha Pearls</span><span class="mono mut">51</span></div></div>
+    </div>
+  </div>
+  <div class="col" style="width:250px;gap:8px">
+    <span class="h3">Pool Leaders</span>
+    <div class="card"><div class="r sb" style="padding:5px 10px;background:#161B26;color:#F0B429;border-radius:8px 8px 0 0"><b class="tiny bc" style="letter-spacing:.15em">MEN'S POOL A</b><span class="tiny" style="color:#7A828F">P · W-L · PTS</span></div>
+      <div class="pad col" style="gap:5px;padding:8px 10px">
+        <div class="r sb"><span class="r"><span class="pos">1</span><span class="tt" style="background:#E8611C">THW</span>Thimphu Warriors</span><span class="mono tiny">4-1 · 9</span></div>
+        <div class="r sb"><span class="r"><span class="pos">2</span><span class="tt" style="background:#2E5EAA">PNB</span>Punakha Bulls</span><span class="mono tiny">3-2 · 8</span></div>
+      </div></div>
+    <div class="card"><div class="r sb" style="padding:5px 10px;background:#161B26;color:#F0B429;border-radius:8px 8px 0 0"><b class="tiny bc" style="letter-spacing:.15em">MEN'S POOL B</b><span class="tiny" style="color:#7A828F">P · W-L · PTS</span></div>
+      <div class="pad col" style="gap:5px;padding:8px 10px">
+        <div class="r sb"><span class="r"><span class="pos">1</span><span class="tt" style="background:#7A1F2B">PDR</span>Paro Dragons</span><span class="mono tiny">4-1 · 9</span></div>
+        <div class="r sb"><span class="r"><span class="pos">2</span><span class="tt" style="background:#C98A12">HAT</span>Haa Tigers</span><span class="mono tiny">4-1 · 9</span></div>
+      </div></div>
+    <div class="card pad" style="background:linear-gradient(120deg,#161B26,#25304a);color:#fff;border:none"><span class="k" style="color:#F0B429">PLAYOFF PICTURE</span><div class="bc" style="font:700 14px 'Barlow Condensed';margin:4px 0 6px">Quarter Finals begin 20 Sept</div><span class="b ghd sm">View Bracket →</span></div>
+  </div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span>Changlimithang Court · Thimphu</span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Home — mobile</div><div class="dv-card"><div class="m">
+<div class="flags"></div>
+<div class="mnav"><span class="mark" style="width:20px;height:20px;font-size:8px">BB</span><b class="bc" style="font-size:12px;letter-spacing:.04em">BHUTAN BASKETBALL</b><span class="grow"></span><span style="font-size:13px">☰</span></div>
+<div class="hero" style="padding:16px 14px 24px">
+  <svg class="mtns" height="34" width="100%" viewBox="0 0 236 34" preserveAspectRatio="none"><path d="M0,34 L40,8 L70,22 L110,4 L150,24 L190,9 L236,20 L236,34 Z" fill="#0E1119"></path></svg>
+  <span class="k" style="color:#F0B429;font-size:8.5px">10–26 SEPT 2026 · THIMPHU</span>
+  <div class="h1" style="font-size:21px;margin-top:5px">National Basketball Championship 2026</div>
+  <div class="r" style="margin-top:9px"><span class="b o sm">Fixtures</span><span class="b ghd sm">Bracket</span></div>
+</div>
+<div class="pad col" style="gap:8px;padding:12px">
+  <div class="card" style="border-color:#E11D48;box-shadow:0 2px 8px rgba(225,29,72,.15)">
+    <div class="r sb" style="padding:6px 9px;border-bottom:1px solid #F4E1E5"><span class="badge bLive"><span class="dot"></span> LIVE</span><span class="tiny mut">Q4 · 03:42</span></div>
+    <div class="pad col" style="gap:5px;padding:8px 9px">
+      <div class="r sb"><span class="r"><span class="tt" style="background:#E8611C;width:20px;height:20px;font-size:7px">THW</span><b>Thimphu Warriors</b></span><b class="mono" style="font-size:16px;color:#E8611C">72</b></div>
+      <div class="r sb"><span class="r"><span class="tt" style="background:#7A1F2B;width:20px;height:20px;font-size:7px">PDR</span>Paro Dragons</span><span class="mono" style="font-size:16px">68</span></div>
+      <span class="b o sm" style="justify-content:center;margin-top:2px">Match Centre →</span>
+    </div>
+  </div>
+  <b class="h3">Upcoming</b>
+  <div class="card pad" style="padding:8px 9px"><div class="tiny mut" style="margin-bottom:5px"><b>SAT 12 SEP</b> · Changlimithang</div>
+    <div class="col" style="gap:6px">
+      <div class="r sb"><span class="mono tiny">10:00</span><span class="grow" style="font-size:9.5px">THW vs PDR</span><span class="chip" style="font-size:8px;padding:1px 7px">Pool A</span></div>
+      <div class="r sb"><span class="mono tiny">12:30</span><span class="grow" style="font-size:9.5px">PNB vs HAT</span><span class="chip" style="font-size:8px;padding:1px 7px">Pool B</span></div>
+      <div class="r sb"><span class="mono tiny">15:00</span><span class="grow" style="font-size:9.5px">TQN vs PPX</span><span class="chip" style="font-size8px;padding:1px 7px">Women</span></div>
+    </div></div>
+  <b class="h3">Pool Leaders</b>
+  <div class="r" style="gap:6px">
+    <div class="card grow pad" style="padding:7px 8px"><span class="tiny mut">POOL A</span><div class="r" style="margin-top:3px"><span class="tt" style="background:#E8611C;width:18px;height:18px;font-size:6.5px">THW</span><b style="font-size:9.5px">Warriors 4-1</b></div></div>
+    <div class="card grow pad" style="padding:7px 8px"><span class="tiny mut">POOL B</span><div class="r" style="margin-top:3px"><span class="tt" style="background:#7A1F2B;width:18px;height:18px;font-size:6.5px">PDR</span><b style="font-size:9.5px">Dragons 4-1</b></div></div>
+  </div>
+</div>
+<div class="foot" style="padding:8px 12px"><span>© BBF 2026</span><span>Admin Login</span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Competitions listing</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a class="on">Competitions</a><a>Fixtures</a><a>Standings</a><a>Teams</a><a>Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="dhdr"><svg class="mtns" height="40" width="100%" viewBox="0 0 860 40" preserveAspectRatio="none" style="opacity:.25"><path d="M0,40 L120,10 L220,30 L340,4 L460,32 L590,8 L700,28 L860,14 L860,40 Z" fill="#000"></path></svg><span class="k" style="color:#F0B429">SEASON 2026</span><div class="h1" style="font-size:26px;position:relative">Competitions</div></div>
+<div class="pad" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:16px 18px">
+  <div class="card pad" style="border-top:3px solid #E8611C"><div class="r sb"><span class="tt lg" style="background:#E8611C;border-radius:8px">🏆</span><span class="badge bLive"><span class="dot"></span> LIVE</span></div><div class="h2" style="margin:8px 0 2px">National Championship</div><span class="tiny mut">2026 · Men · Pool + Playoffs</span><div class="r sb" style="margin-top:9px;border-top:1px solid #EEECE6;padding-top:8px"><span class="tiny mut">10 teams · 2 pools</span><span class="b sm gh">Open →</span></div></div>
+  <div class="card pad" style="border-top:3px solid #A2335C"><div class="r sb"><span class="tt lg" style="background:#A2335C;border-radius:8px">🏆</span><span class="badge bLive"><span class="dot"></span> LIVE</span></div><div class="h2" style="margin:8px 0 2px">Women's Championship</div><span class="tiny mut">2026 · Women · Round Robin + Final</span><div class="r sb" style="margin-top:9px;border-top:1px solid #EEECE6;padding-top:8px"><span class="tiny mut">6 teams</span><span class="b sm gh">Open →</span></div></div>
+  <div class="card pad" style="border-top:3px solid #2E5EAA"><div class="r sb"><span class="tt lg" style="background:#2E5EAA;border-radius:8px">🏆</span><span class="badge bReg">REGISTRATION OPEN</span></div><div class="h2" style="margin:8px 0 2px">Youth Tournament U-18</div><span class="tiny mut">2026 · Mixed · Knockout</span><div class="r sb" style="margin-top:9px;border-top:1px solid #EEECE6;padding-top:8px"><span class="tiny mut">6 / 12 registered</span><span class="b sm gh">Open →</span></div></div>
+  <div class="card pad" style="border-top:3px solid #3E8E5A"><div class="r sb"><span class="tt lg" style="background:#3E8E5A;border-radius:8px">🏆</span><span class="badge bUp">UPCOMING</span></div><div class="h2" style="margin:8px 0 2px">Interstate Championship</div><span class="tiny mut">Nov 2026 · Men · Pool + Playoffs</span><div class="r sb" style="margin-top:9px;border-top:1px solid #EEECE6;padding-top:8px"><span class="tiny mut">8 teams</span><span class="b sm gh">Open →</span></div></div>
+  <div class="card pad" style="border-top:3px solid #C98A12"><div class="r sb"><span class="tt lg" style="background:#C98A12;border-radius:8px">🏆</span><span class="badge bUp">UPCOMING</span></div><div class="h2" style="margin:8px 0 2px">Club Championship</div><span class="tiny mut">Dec 2026 · Men &amp; Women · Round Robin</span><div class="r sb" style="margin-top:9px;border-top:1px solid #EEECE6;padding-top:8px"><span class="tiny mut">12 teams</span><span class="b sm gh">Open →</span></div></div>
+  <div class="card pad" style="border-top:3px solid #5B6472"><div class="r sb"><span class="tt lg" style="background:#5B6472;border-radius:8px">🏆</span><span class="badge bDone">COMPLETED</span></div><div class="h2" style="margin:8px 0 2px">Regional Championship</div><span class="tiny mut">2025 · Men · Knockout · 🏆 Thimphu Warriors</span><div class="r sb" style="margin-top:9px;border-top:1px solid #EEECE6;padding-top:8px"><span class="tiny mut">8 teams</span><span class="b sm gh">Archive →</span></div></div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span></span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Competition detail — hub</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a class="on">Competitions</a><a>Fixtures</a><a>Standings</a><a>Teams</a><a>Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="dhdr" style="padding:18px">
+  <div class="arc" style="width:300px;height:300px;right:-100px;top:-150px"></div>
+  <div class="r" style="gap:14px;position:relative">
+    <span class="tt xl" style="background:#E8611C;border-radius:12px">🏆</span>
+    <div class="col" style="gap:3px">
+      <span class="k" style="color:#F0B429">MEN · POOL + PLAYOFFS · <span class="badge bLive"><span class="dot"></span> LIVE</span></span>
+      <div class="h1" style="font-size:24px">Bhutan National Basketball Championship 2026</div>
+      <span class="tiny" style="color:#B9C0CD">10 – 26 September 2026 · Changlimithang Court, Thimphu · 10 teams · 2 pools</span>
+    </div>
+  </div>
+</div>
+<div class="tabs"><span class="tab on">Overview</span><span class="tab">Fixtures</span><span class="tab">Results</span><span class="tab">Standings</span><span class="tab">Teams</span><span class="tab">Bracket</span></div>
+<div class="pad r" style="gap:12px;align-items:flex-start;padding:14px 18px">
+  <div class="col grow" style="gap:10px">
+    <div class="r" style="gap:10px">
+      <div class="kpi"><div class="l">Stage</div><div class="v" style="font-size:15px">Pool Round · MD 5 of 5</div></div>
+      <div class="kpi"><div class="l">Matches Played</div><div class="v">23<span class="mut" style="font:600 11px Barlow"> / 29</span></div></div>
+      <div class="kpi"><div class="l">Next Milestone</div><div class="v" style="font-size:15px">QF · 20 Sept</div></div>
+    </div>
+    <div class="card"><div class="pad r sb" style="padding:8px 12px;border-bottom:1px solid #EEECE6"><b class="h3">Next Fixtures</b><a class="tiny">Full schedule →</a></div>
+      <div class="pad col" style="gap:8px">
+        <div class="r sb"><span class="mono tiny" style="width:70px">SAT · 10:00</span><span class="r grow"><span class="tt" style="background:#E8611C">THW</span>Thimphu Warriors <span class="mut">vs</span> <span class="tt" style="background:#7A1F2B">PDR</span>Paro Dragons</span><span class="chip">Pool A</span></div>
+        <div class="r sb"><span class="mono tiny" style="width:70px">SAT · 12:30</span><span class="r grow"><span class="tt" style="background:#2E5EAA">PNB</span>Punakha Bulls <span class="mut">vs</span> <span class="tt" style="background:#C98A12">HAT</span>Haa Tigers</span><span class="chip">Pool B</span></div>
+      </div></div>
+    <div class="card pad" style="background:linear-gradient(120deg,#161B26,#25304a);color:#fff;border:none"><div class="r sb"><div><span class="k" style="color:#F0B429">PLAYOFF QUALIFICATION</span><div class="bc" style="font:700 13px 'Barlow Condensed';margin-top:3px">Top 3 of each pool advance · A2 v B3 and B2 v A3 in Quarter Finals</div></div><span class="b ghd sm">Bracket →</span></div></div>
+  </div>
+  <div class="col" style="width:300px;gap:8px">
+    <div class="card"><div class="r sb" style="padding:5px 10px;background:#161B26;color:#F0B429;border-radius:8px 8px 0 0"><b class="tiny bc" style="letter-spacing:.15em">POOL A</b><span class="tiny" style="color:#7A828F">W-L</span></div>
+      <div class="pad col" style="gap:4px;padding:7px 10px">
+        <div class="r sb"><span class="r"><span class="pos">1</span><span class="tt" style="background:#E8611C">THW</span>Thimphu Warriors</span><span class="mono tiny">4-1</span></div>
+        <div class="r sb"><span class="r"><span class="pos">2</span><span class="tt" style="background:#2E5EAA">PNB</span>Punakha Bulls</span><span class="mono tiny">3-2</span></div>
+        <div class="r sb"><span class="r"><span class="pos">3</span><span class="tt" style="background:#3E7A5A">WDE</span>Wangdue Eagles</span><span class="mono tiny">3-2</span></div>
+      </div></div>
+    <div class="card"><div class="r sb" style="padding:5px 10px;background:#161B26;color:#F0B429;border-radius:8px 8px 0 0"><b class="tiny bc" style="letter-spacing:.15em">POOL B</b><span class="tiny" style="color:#7A828F">W-L</span></div>
+      <div class="pad col" style="gap:4px;padding:7px 10px">
+        <div class="r sb"><span class="r"><span class="pos">1</span><span class="tt" style="background:#7A1F2B">PDR</span>Paro Dragons</span><span class="mono tiny">4-1</span></div>
+        <div class="r sb"><span class="r"><span class="pos">2</span><span class="tt" style="background:#C98A12">HAT</span>Haa Tigers</span><span class="mono tiny">4-1</span></div>
+        <div class="r sb"><span class="r"><span class="pos">3</span><span class="tt" style="background:#5B4A9E">BMF</span>Bumthang Falcons</span><span class="mono tiny">2-3</span></div>
+      </div></div>
+  </div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span></span></div>
+</div></div></div>
+
+
+<div class="dv-grp">PUBLIC — FIXTURES · RESULTS · STANDINGS</div>
+
+<div class="dv-opt" id="1e"><div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Fixtures — desktop, filtered</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a class="on">Fixtures</a><a>Standings</a><a>Teams</a><a>Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="dhdr"><span class="k" style="color:#F0B429">SCHEDULE</span><div class="h1" style="font-size:24px">Fixtures</div></div>
+<div class="pad r" style="gap:7px;padding:10px 18px;background:#fff;border-bottom:1px solid #E3E1DA;flex-wrap:wrap">
+  <span class="sel">National Championship 2026</span>
+  <span class="chip on">All</span><span class="chip">Men</span><span class="chip">Women</span><span class="chip">Pool A</span><span class="chip">Pool B</span>
+  <span style="width:1px;height:16px;background:#E3E1DA"></span>
+  <span class="chip on">Upcoming</span><span class="chip" style="color:#E11D48;border-color:#E11D48">● Live</span><span class="chip">Completed</span>
+  <span class="grow"></span><span class="sel">Date: This week</span>
+</div>
+<div class="pad col" style="gap:10px;padding:14px 18px">
+  <div class="r"><b class="h3">Saturday, 12 September</b><span class="tiny mut">· Matchday 5 · Changlimithang Court</span></div>
+  <div class="card">
+    <div class="r" style="padding:9px 12px;gap:12px;border-bottom:1px solid #EEECE6">
+      <span class="mono" style="width:48px;font-size:12px">10:00</span>
+      <span class="r" style="width:200px;justify-content:flex-end"><b>Thimphu Warriors</b><span class="tt" style="background:#E8611C">THW</span></span>
+      <span class="badge bUp">VS</span>
+      <span class="r" style="width:200px"><span class="tt" style="background:#7A1F2B">PDR</span><b>Paro Dragons</b></span>
+      <span class="chip">Men · Pool A · R5</span><span class="grow"></span><span class="tiny mut">Court 1</span><span class="b sm gh">Preview</span>
+    </div>
+    <div class="r" style="padding:9px 12px;gap:12px;border-bottom:1px solid #EEECE6">
+      <span class="mono" style="width:48px;font-size:12px">12:30</span>
+      <span class="r" style="width:200px;justify-content:flex-end"><b>Punakha Bulls</b><span class="tt" style="background:#2E5EAA">PNB</span></span>
+      <span class="badge bUp">VS</span>
+      <span class="r" style="width:200px"><span class="tt" style="background:#C98A12">HAT</span><b>Haa Tigers</b></span>
+      <span class="chip">Men · Pool B · R5</span><span class="grow"></span><span class="tiny mut">Court 1</span><span class="b sm gh">Preview</span>
+    </div>
+    <div class="r" style="padding:9px 12px;gap:12px">
+      <span class="mono" style="width:48px;font-size:12px">15:00</span>
+      <span class="r" style="width:200px;justify-content:flex-end"><b>Thimphu Queens</b><span class="tt" style="background:#A2335C">TQN</span></span>
+      <span class="badge bUp">VS</span>
+      <span class="r" style="width:200px"><span class="tt" style="background:#D9652B">PPX</span><b>Paro Phoenix</b></span>
+      <span class="chip">Women · R4</span><span class="grow"></span><span class="tiny mut">Court 1</span><span class="b sm gh">Preview</span>
+    </div>
+  </div>
+  <div class="r"><b class="h3">Sunday, 13 September</b><span class="tiny mut">· Matchday 6</span></div>
+  <div class="card">
+    <div class="r" style="padding:9px 12px;gap:12px;border-bottom:1px solid #EEECE6">
+      <span class="mono" style="width:48px;font-size:12px">10:00</span>
+      <span class="r" style="width:200px;justify-content:flex-end"><b>Wangdue Eagles</b><span class="tt" style="background:#3E7A5A">WDE</span></span>
+      <span class="badge bUp">VS</span>
+      <span class="r" style="width:200px"><span class="tt" style="background:#2C7DA0">GLS</span><b>Gelephu Storm</b></span>
+      <span class="chip">Men · Pool A · R5</span><span class="grow"></span><span class="tiny mut">Court 1</span><span class="b sm gh">Preview</span>
+    </div>
+    <div class="r" style="padding:9px 12px;gap:12px">
+      <span class="mono" style="width:48px;font-size:12px">12:30</span>
+      <span class="r" style="width:200px;justify-content:flex-end"><b>Mongar Chargers</b><span class="tt" style="background:#C1462F">MGC</span></span>
+      <span class="badge bUp">VS</span>
+      <span class="r" style="width:200px"><span class="tt" style="background:#8A5A44">SMS</span><b>Samtse Stallions</b></span>
+      <span class="chip">Men · Pool B · R5</span><span class="grow"></span><span class="tiny mut">Court 1</span><span class="b sm gh">Preview</span>
+    </div>
+  </div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span></span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1f"><div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Fixtures — mobile</div><div class="dv-card"><div class="m">
+<div class="flags"></div>
+<div class="mnav"><span class="mark" style="width:20px;height:20px;font-size:8px">BB</span><b class="bc" style="font-size:12px">FIXTURES</b><span class="grow"></span><span style="font-size:13px">☰</span></div>
+<div class="r" style="gap:5px;padding:8px 10px;background:#fff;border-bottom:1px solid #E3E1DA"><span class="chip on" style="font-size:8.5px">All</span><span class="chip" style="font-size:8.5px">Men</span><span class="chip" style="font-size:8.5px">Women</span><span class="chip" style="font-size:8.5px">Pool A</span><span class="chip" style="font-size:8.5px">Po…</span></div>
+<div class="pad col" style="gap:7px;padding:10px">
+  <b class="h3" style="font-size:11px">Sat, 12 September</b>
+  <div class="card pad" style="padding:8px 9px">
+    <div class="r sb"><span class="mono tiny">10:00</span><span class="chip" style="font-size:8px;padding:1px 6px">Pool A</span></div>
+    <div class="r" style="margin-top:5px"><span class="tt" style="width:19px;height:19px;font-size:6.5px;background:#E8611C">THW</span><b style="font-size:9.5px">Thimphu Warriors</b></div>
+    <div class="r sb" style="margin-top:3px"><span class="r"><span class="tt" style="width:19px;height:19px;font-size:6.5px;background:#7A1F2B">PDR</span><b style="font-size:9.5px">Paro Dragons</b></span><span class="tiny mut">Court 1</span></div>
+  </div>
+  <div class="card pad" style="padding:8px 9px">
+    <div class="r sb"><span class="mono tiny">12:30</span><span class="chip" style="font-size:8px;padding:1px 6px">Pool B</span></div>
+    <div class="r" style="margin-top:5px"><span class="tt" style="width:19px;height:19px;font-size:6.5px;background:#2E5EAA">PNB</span><b style="font-size:9.5px">Punakha Bulls</b></div>
+    <div class="r sb" style="margin-top:3px"><span class="r"><span class="tt" style="width:19px;height:19px;font-size:6.5px;background:#C98A12">HAT</span><b style="font-size:9.5px">Haa Tigers</b></span><span class="tiny mut">Court 1</span></div>
+  </div>
+  <div class="card pad" style="padding:8px 9px">
+    <div class="r sb"><span class="mono tiny">15:00</span><span class="chip" style="font-size:8px;padding:1px 6px">Women</span></div>
+    <div class="r" style="margin-top:5px"><span class="tt" style="width:19px;height:19px;font-size:6.5px;background:#A2335C">TQN</span><b style="font-size:9.5px">Thimphu Queens</b></div>
+    <div class="r sb" style="margin-top:3px"><span class="r"><span class="tt" style="width:19px;height:19px;font-size:6.5px;background:#D9652B">PPX</span><b style="font-size:9.5px">Paro Phoenix</b></span><span class="tiny mut">Court 1</span></div>
+  </div>
+  <b class="h3" style="font-size:11px;margin-top:3px">Sun, 13 September</b>
+  <div class="card pad" style="padding:8px 9px">
+    <div class="r sb"><span class="mono tiny">10:00</span><span class="chip" style="font-size:8px;padding:1px 6px">Pool A</span></div>
+    <div class="r" style="margin-top:5px"><span class="tt" style="width:19px;height:19px;font-size:6.5px;background:#3E7A5A">WDE</span><b style="font-size:9.5px">Wangdue Eagles</b></div>
+    <div class="r sb" style="margin-top:3px"><span class="r"><span class="tt" style="width:19px;height:19px;font-size:6.5px;background:#2C7DA0">GLS</span><b style="font-size:9.5px">Gelephu Storm</b></span><span class="tiny mut">Court 1</span></div>
+  </div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1g"><div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>Results</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a>Fixtures</a><a>Standings</a><a>Teams</a><a class="on">Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="dhdr"><span class="k" style="color:#F0B429">FINAL SCORES</span><div class="h1" style="font-size:24px">Results</div></div>
+<div class="pad r" style="gap:7px;padding:10px 18px;background:#fff;border-bottom:1px solid #E3E1DA">
+  <span class="sel">National Championship 2026</span><span class="chip on">All</span><span class="chip">Men</span><span class="chip">Women</span><span class="chip">Pool A</span><span class="chip">Pool B</span><span class="grow"></span><span class="sel">Newest first</span>
+</div>
+<div class="pad col" style="gap:10px;padding:14px 18px">
+  <b class="h3">Thursday, 11 September</b>
+  <div class="card">
+    <div class="r" style="padding:10px 12px;gap:12px;border-bottom:1px solid #EEECE6">
+      <span class="badge bFin">FINAL</span>
+      <span class="r" style="width:220px;justify-content:flex-end"><b>Thimphu Warriors</b><span class="tt" style="background:#E8611C">THW</span></span>
+      <span class="mono" style="font-size:15px"><b style="color:#E8611C">82</b><span class="mut" style="font-size:11px"> — </span><span class="mut">75</span></span>
+      <span class="r" style="width:220px"><span class="tt" style="background:#7A1F2B">PDR</span><span class="mut">Paro Dragons</span></span>
+      <span class="chip">Pool A</span><span class="grow"></span><span class="b sm gh">Match details</span>
+    </div>
+    <div class="r" style="padding:10px 12px;gap:12px">
+      <span class="badge bFin">FINAL</span>
+      <span class="r" style="width:220px;justify-content:flex-end"><b>Haa Tigers</b><span class="tt" style="background:#C98A12">HAT</span></span>
+      <span class="mono" style="font-size:15px"><b style="color:#E8611C">69</b><span class="mut" style="font-size:11px"> — </span><span class="mut">64</span></span>
+      <span class="r" style="width:220px"><span class="tt" style="background:#5B4A9E">BMF</span><span class="mut">Bumthang Falcons</span></span>
+      <span class="chip">Pool B</span><span class="grow"></span><span class="b sm gh">Match details</span>
+    </div>
+  </div>
+  <b class="h3">Wednesday, 10 September</b>
+  <div class="card">
+    <div class="r" style="padding:10px 12px;gap:12px;border-bottom:1px solid #EEECE6">
+      <span class="badge bFin">FINAL</span>
+      <span class="r" style="width:220px;justify-content:flex-end"><b>Thimphu Queens</b><span class="tt" style="background:#A2335C">TQN</span></span>
+      <span class="mono" style="font-size:15px"><b style="color:#E8611C">58</b><span class="mut" style="font-size:11px"> — </span><span class="mut">51</span></span>
+      <span class="r" style="width:220px"><span class="tt" style="background:#4E7A9E">PPL</span><span class="mut">Punakha Pearls</span></span>
+      <span class="chip">Women</span><span class="grow"></span><span class="b sm gh">Match details</span>
+    </div>
+    <div class="r" style="padding:10px 12px;gap:12px">
+      <span class="badge bFin">FINAL · OT</span>
+      <span class="r" style="width:220px;justify-content:flex-end"><span class="mut">Trongsa Titans</span><span class="tt" style="background:#444B57">TRT</span></span>
+      <span class="mono" style="font-size:15px"><span class="mut">77</span><span class="mut" style="font-size:11px"> — </span><b style="color:#E8611C">81</b></span>
+      <span class="r" style="width:220px"><span class="tt" style="background:#2E5EAA">PNB</span><b>Punakha Bulls</b></span>
+      <span class="chip">Pool A</span><span class="grow"></span><span class="b sm gh">Match details</span>
+    </div>
+  </div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span></span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1h"><div class="dv-olabel"><a class="dv-oid" href="#1h">1h</a>Men's standings — Pool A &amp; B</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a>Fixtures</a><a class="on">Standings</a><a>Teams</a><a>Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="dhdr"><span class="k" style="color:#F0B429">NATIONAL CHAMPIONSHIP 2026 · MEN</span><div class="h1" style="font-size:24px">Pool Standings</div></div>
+<div class="pad r" style="gap:7px;padding:10px 18px;background:#fff;border-bottom:1px solid #E3E1DA"><span class="chip on">Men</span><span class="chip">Women</span><span class="grow"></span><span class="r tiny mut"><span style="width:10px;height:10px;background:#FDF3EC;box-shadow:inset 3px 0 0 #E8611C;display:inline-block"></span> Qualify for playoffs (top 3)</span></div>
+<div class="pad col" style="gap:14px;padding:14px 18px">
+  <div class="card" style="overflow:hidden"><table class="st">
+    <tr><th colspan="2" style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:.15em;color:#F0B429">POOL A</th><th class="n">P</th><th class="n">W</th><th class="n">L</th><th class="n">PF</th><th class="n">PA</th><th class="n">PD</th><th class="n">PTS</th><th style="text-align:right">FORM</th></tr>
+    <tr class="q"><td class="n" style="width:20px"><span class="pos">1</span></td><td><span class="r"><span class="tt" style="background:#E8611C">THW</span><b>Thimphu Warriors</b></span></td><td class="n">5</td><td class="n">4</td><td class="n">1</td><td class="n">410</td><td class="n">350</td><td class="n" style="color:#2F855A">+60</td><td class="n"><b>9</b></td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fw">W</span><span class="fw">W</span><span class="fw">W</span><span class="fl">L</span><span class="fw">W</span></span></td></tr>
+    <tr class="q"><td class="n"><span class="pos">2</span></td><td><span class="r"><span class="tt" style="background:#2E5EAA">PNB</span><b>Punakha Bulls</b></span></td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">388</td><td class="n">371</td><td class="n" style="color:#2F855A">+17</td><td class="n"><b>8</b></td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fl">L</span><span class="fw">W</span><span class="fw">W</span><span class="fl">L</span><span class="fw">W</span></span></td></tr>
+    <tr class="q"><td class="n"><span class="pos">3</span></td><td><span class="r"><span class="tt" style="background:#3E7A5A">WDE</span><b>Wangdue Eagles</b></span></td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">362</td><td class="n">355</td><td class="n" style="color:#2F855A">+7</td><td class="n"><b>8</b></td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fw">W</span><span class="fl">L</span><span class="fw">W</span><span class="fw">W</span><span class="fl">L</span></span></td></tr>
+    <tr><td class="n"><span class="pos">4</span></td><td><span class="r"><span class="tt" style="background:#444B57">TRT</span>Trongsa Titans</span></td><td class="n">5</td><td class="n">2</td><td class="n">3</td><td class="n">351</td><td class="n">368</td><td class="n" style="color:#B3282D">−17</td><td class="n">7</td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fl">L</span><span class="fw">W</span><span class="fl">L</span><span class="fw">W</span><span class="fl">L</span></span></td></tr>
+    <tr><td class="n"><span class="pos">5</span></td><td><span class="r"><span class="tt" style="background:#2C7DA0">GLS</span>Gelephu Storm</span></td><td class="n">5</td><td class="n">1</td><td class="n">4</td><td class="n">330</td><td class="n">397</td><td class="n" style="color:#B3282D">−67</td><td class="n">6</td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fw">W</span><span class="fl">L</span><span class="fl">L</span><span class="fl">L</span><span class="fl">L</span></span></td></tr>
+  </table></div>
+  <div class="card" style="overflow:hidden"><table class="st">
+    <tr><th colspan="2" style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:.15em;color:#F0B429">POOL B</th><th class="n">P</th><th class="n">W</th><th class="n">L</th><th class="n">PF</th><th class="n">PA</th><th class="n">PD</th><th class="n">PTS</th><th style="text-align:right">FORM</th></tr>
+    <tr class="q"><td class="n" style="width:20px"><span class="pos">1</span></td><td><span class="r"><span class="tt" style="background:#7A1F2B">PDR</span><b>Paro Dragons</b></span></td><td class="n">5</td><td class="n">4</td><td class="n">1</td><td class="n">402</td><td class="n">348</td><td class="n" style="color:#2F855A">+54</td><td class="n"><b>9</b></td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fw">W</span><span class="fw">W</span><span class="fl">L</span><span class="fw">W</span><span class="fw">W</span></span></td></tr>
+    <tr class="q"><td class="n"><span class="pos">2</span></td><td><span class="r"><span class="tt" style="background:#C98A12">HAT</span><b>Haa Tigers</b></span></td><td class="n">5</td><td class="n">4</td><td class="n">1</td><td class="n">379</td><td class="n">341</td><td class="n" style="color:#2F855A">+38</td><td class="n"><b>9</b></td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fw">W</span><span class="fw">W</span><span class="fw">W</span><span class="fl">L</span><span class="fw">W</span></span></td></tr>
+    <tr class="q"><td class="n"><span class="pos">3</span></td><td><span class="r"><span class="tt" style="background:#5B4A9E">BMF</span><b>Bumthang Falcons</b></span></td><td class="n">5</td><td class="n">2</td><td class="n">3</td><td class="n">344</td><td class="n">352</td><td class="n" style="color:#B3282D">−8</td><td class="n"><b>7</b></td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fl">L</span><span class="fw">W</span><span class="fl">L</span><span class="fw">W</span><span class="fl">L</span></span></td></tr>
+    <tr><td class="n"><span class="pos">4</span></td><td><span class="r"><span class="tt" style="background:#C1462F">MGC</span>Mongar Chargers</span></td><td class="n">5</td><td class="n">2</td><td class="n">3</td><td class="n">339</td><td class="n">361</td><td class="n" style="color:#B3282D">−22</td><td class="n">7</td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fw">W</span><span class="fl">L</span><span class="fw">W</span><span class="fl">L</span><span class="fl">L</span></span></td></tr>
+    <tr><td class="n"><span class="pos">5</span></td><td><span class="r"><span class="tt" style="background:#8A5A44">SMS</span>Samtse Stallions</span></td><td class="n">5</td><td class="n">1</td><td class="n">4</td><td class="n">328</td><td class="n">390</td><td class="n" style="color:#B3282D">−62</td><td class="n">6</td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fl">L</span><span class="fl">L</span><span class="fw">W</span><span class="fl">L</span><span class="fl">L</span></span></td></tr>
+  </table></div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span>P Played · PF For · PA Against · PD Difference · PTS Points</span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1i"><div class="dv-olabel"><a class="dv-oid" href="#1i">1i</a>Standings — mobile (h-scroll)</div><div class="dv-card"><div class="m">
+<div class="flags"></div>
+<div class="mnav"><span class="mark" style="width:20px;height:20px;font-size:8px">BB</span><b class="bc" style="font-size:12px">STANDINGS</b><span class="grow"></span><span style="font-size:13px">☰</span></div>
+<div class="r" style="gap:5px;padding:8px 10px;background:#fff;border-bottom:1px solid #E3E1DA"><span class="chip on" style="font-size:8.5px">Pool A</span><span class="chip" style="font-size:8.5px">Pool B</span><span class="chip" style="font-size:8.5px">Women</span></div>
+<div style="padding:10px">
+<div class="card" style="overflow:hidden;position:relative">
+<table class="st" style="font-size:9px">
+  <tr><th colspan="2" style="font-size:9px;color:#F0B429">POOL A</th><th class="n">P</th><th class="n">W</th><th class="n">L</th><th class="n">PD</th><th class="n">PTS</th></tr>
+  <tr class="q"><td class="n"><span class="pos" style="font-size:9px">1</span></td><td><span class="r" style="gap:5px"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#E8611C">THW</span><b>Warriors</b></span></td><td class="n">5</td><td class="n">4</td><td class="n">1</td><td class="n">+60</td><td class="n"><b>9</b></td></tr>
+  <tr class="q"><td class="n"><span class="pos" style="font-size:9px">2</span></td><td><span class="r" style="gap:5px"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#2E5EAA">PNB</span><b>Bulls</b></span></td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">+17</td><td class="n"><b>8</b></td></tr>
+  <tr class="q"><td class="n"><span class="pos" style="font-size:9px">3</span></td><td><span class="r" style="gap:5px"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#3E7A5A">WDE</span><b>Eagles</b></span></td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">+7</td><td class="n"><b>8</b></td></tr>
+  <tr><td class="n"><span class="pos" style="font-size:9px">4</span></td><td><span class="r" style="gap:5px"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#444B57">TRT</span>Titans</span></td><td class="n">5</td><td class="n">2</td><td class="n">3</td><td class="n">−17</td><td class="n">7</td></tr>
+  <tr><td class="n"><span class="pos" style="font-size:9px">5</span></td><td><span class="r" style="gap:5px"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#2C7DA0">GLS</span>Storm</span></td><td class="n">5</td><td class="n">1</td><td class="n">4</td><td class="n">−67</td><td class="n">6</td></tr>
+</table>
+<div style="position:absolute;right:0;top:22px;bottom:0;width:22px;background:linear-gradient(90deg,transparent,rgba(0,0,0,.12));display:grid;place-items:center;color:#8A909C;font-size:9px">›</div>
+</div>
+<div class="tiny mut" style="margin-top:6px;text-align:center">Swipe for PF · PA · FORM →</div>
+<div class="card pad" style="margin-top:8px;padding:8px 9px;background:#FDF3EC;border-color:#F3D2BC"><span class="tiny" style="color:#B3441A"><b>Top 3 qualify</b> for the playoffs · QF begins 20 Sept</span></div>
+</div>
+</div></div></div>
+
+<div class="dv-grp">PUBLIC — BRACKET (2 OPTIONS) · WOMEN</div>
+
+<div class="dv-opt" id="1j"><div class="dv-olabel"><a class="dv-oid" href="#1j">1j</a>Men's bracket — option A: left-to-right broadcast style</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a>Fixtures</a><a>Standings</a><a>Teams</a><a>Results</a><a class="on">Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="dhdr"><svg class="mtns" height="40" width="100%" viewBox="0 0 860 40" preserveAspectRatio="none" style="opacity:.25"><path d="M0,40 L120,10 L220,30 L340,4 L460,32 L590,8 L700,28 L860,14 L860,40 Z" fill="#000"></path></svg><span class="k" style="color:#F0B429">MEN'S PLAYOFFS · ROAD TO THE TITLE</span><div class="h1" style="font-size:24px">Playoff Bracket</div></div>
+<div class="pad" style="padding:16px 18px;background:linear-gradient(180deg,#F7F5F1,#F1EDE4)">
+<div class="r" style="gap:0;align-items:stretch">
+  <div class="col" style="gap:14px;justify-content:center">
+    <div class="tiny bc" style="font-weight:700;letter-spacing:.18em;color:#8A909C">QUARTER FINALS · 20 SEPT</div>
+    <div class="bm"><div class="hd"><span>QF1 · A2 v B3</span><span class="badge bFin" style="font-size:7px">FINAL</span></div>
+      <div class="rw win"><span class="tt" style="background:#2E5EAA;width:19px;height:19px;font-size:6.5px">PNB</span>Punakha Bulls<span class="sc">74</span></div>
+      <div class="rw lose"><span class="tt" style="background:#5B4A9E;width:19px;height:19px;font-size:6.5px">BMF</span>Bumthang Falcons<span class="sc">66</span></div>
+      <div class="hd" style="background:#fff;border-top:1px solid #F1EFE9"><span>20 Sept · 10:00 · Court 1</span></div></div>
+    <div class="bm"><div class="hd"><span>QF2 · B2 v A3</span><span class="badge bLive" style="font-size:7px"><span class="dot"></span> LIVE</span></div>
+      <div class="rw win"><span class="tt" style="background:#C98A12;width:19px;height:19px;font-size:6.5px">HAT</span>Haa Tigers<span class="sc" style="color:#E11D48">51</span></div>
+      <div class="rw"><span class="tt" style="background:#3E7A5A;width:19px;height:19px;font-size:6.5px">WDE</span>Wangdue Eagles<span class="sc">48</span></div>
+      <div class="hd" style="background:#fff;border-top:1px solid #F1EFE9"><span>Q3 · 04:12 · Court 1</span></div></div>
+  </div>
+  <div class="col" style="justify-content:center"><div class="conn" style="margin:34px 0 96px"></div><div class="conn" style="margin:-60px 0 40px"></div></div>
+  <div class="col" style="gap:26px;justify-content:center">
+    <div class="tiny bc" style="font-weight:700;letter-spacing:.18em;color:#8A909C">SEMI FINALS · 23 SEPT</div>
+    <div class="bm"><div class="hd"><span>SF1 · POOL A WINNER v QF2</span><span class="badge bUp" style="font-size:7px">UPCOMING</span></div>
+      <div class="rw"><span class="tt" style="background:#E8611C;width:19px;height:19px;font-size:6.5px">THW</span>Thimphu Warriors<span class="sc mut">–</span></div>
+      <div class="rw mut"><span class="tt" style="background:#C3C9D2;color:#6B7280;width:19px;height:19px;font-size:6.5px">?</span>Winner QF2<span class="sc">–</span></div>
+      <div class="hd" style="background:#fff;border-top:1px solid #F1EFE9"><span>23 Sept · 17:00 · Court 1</span></div></div>
+    <div class="bm"><div class="hd"><span>SF2 · POOL B WINNER v QF1</span><span class="badge bUp" style="font-size:7px">UPCOMING</span></div>
+      <div class="rw"><span class="tt" style="background:#7A1F2B;width:19px;height:19px;font-size:6.5px">PDR</span>Paro Dragons<span class="sc mut">–</span></div>
+      <div class="rw"><span class="tt" style="background:#2E5EAA;width:19px;height:19px;font-size:6.5px">PNB</span>Punakha Bulls<span class="sc mut">–</span></div>
+      <div class="hd" style="background:#fff;border-top:1px solid #F1EFE9"><span>23 Sept · 19:30 · Court 1</span></div></div>
+  </div>
+  <div class="col" style="justify-content:center"><div class="conn" style="margin:60px 0"></div></div>
+  <div class="col" style="justify-content:center;gap:10px">
+    <div class="tiny bc" style="font-weight:700;letter-spacing:.18em;color:#8A909C">FINAL · 26 SEPT</div>
+    <div class="bm" style="width:176px;border:2px solid #F0B429;box-shadow:0 4px 14px rgba(240,180,41,.3)"><div class="hd" style="background:#161B26;color:#F0B429"><span>CHAMPIONSHIP FINAL</span></div>
+      <div class="rw"><span class="tt" style="background:#C3C9D2;color:#6B7280;width:19px;height:19px;font-size:6.5px">?</span>Winner SF1<span class="sc mut">–</span></div>
+      <div class="rw"><span class="tt" style="background:#C3C9D2;color:#6B7280;width:19px;height:19px;font-size:6.5px">?</span>Winner SF2<span class="sc mut">–</span></div>
+      <div class="hd" style="background:#fff;border-top:1px solid #F1EFE9"><span>26 Sept · 18:00 · Changlimithang</span></div></div>
+  </div>
+  <div class="col" style="justify-content:center"><div class="conn2"></div></div>
+  <div class="col" style="justify-content:center">
+    <div style="width:120px;text-align:center;background:linear-gradient(160deg,#161B26,#2a3550);border-radius:10px;padding:16px 10px;color:#fff;box-shadow:0 6px 18px rgba(22,27,38,.35)">
+      <div style="font-size:24px">🏆</div>
+      <div class="k" style="color:#F0B429;font-size:8.5px;letter-spacing:.24em">CHAMPION</div>
+      <div class="tiny" style="color:#7A828F;margin-top:4px">Decided 26 Sept</div>
+    </div>
+  </div>
+</div>
+<div class="r" style="margin-top:14px;gap:14px"><span class="tiny mut">Winners advance automatically when results are entered</span><span class="grow"></span><span class="r tiny mut"><span class="badge bLive" style="font-size:7px">LIVE</span> in play</span><span class="r tiny mut"><span class="badge bFin" style="font-size:7px">FINAL</span> decided</span></div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1k"><div class="dv-olabel"><a class="dv-oid" href="#1k">1k</a>Men's bracket — option B: mirrored, final at centre stage</div><div class="dv-card"><div class="scr" style="background:#161B26">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a>Fixtures</a><a>Standings</a><a>Teams</a><a>Results</a><a class="on">Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div style="text-align:center;padding:16px 0 4px;color:#fff;position:relative;overflow:hidden">
+  <span class="k" style="color:#F0B429">NATIONAL CHAMPIONSHIP 2026</span>
+  <div class="h1" style="font-size:26px;color:#fff">Road to Changlimithang</div>
+</div>
+<div class="pad r" style="padding:18px;gap:10px;align-items:center">
+  <div class="col" style="gap:12px">
+    <div class="tiny bc" style="font-weight:700;letter-spacing:.18em;color:#7A828F">POOL A SIDE</div>
+    <div class="bm" style="width:158px"><div class="hd"><span>QF1</span><span class="badge bFin" style="font-size:7px">FINAL</span></div>
+      <div class="rw win"><span class="tt" style="background:#2E5EAA;width:18px;height:18px;font-size:6px">PNB</span>Bulls<span class="sc">74</span></div>
+      <div class="rw lose"><span class="tt" style="background:#5B4A9E;width:18px;height:18px;font-size:6px">BMF</span>Falcons<span class="sc">66</span></div></div>
+    <div class="bm" style="width:158px"><div class="hd"><span>SF1</span><span class="badge bUp" style="font-size:7px">23 SEPT</span></div>
+      <div class="rw"><span class="tt" style="background:#E8611C;width:18px;height:18px;font-size:6px">THW</span>Warriors <span class="tiny" style="color:#E8611C">A1</span><span class="sc mut">–</span></div>
+      <div class="rw mut"><span class="tt" style="background:#C3C9D2;color:#6B7280;width:18px;height:18px;font-size:6px">?</span>QF2 winner<span class="sc">–</span></div></div>
+  </div>
+  <div class="conn2" style="border-color:rgba(240,180,41,.5)"></div>
+  <div class="grow col" style="align-items:center;gap:8px">
+    <div style="width:210px;background:linear-gradient(160deg,#1E2536,#2a3550);border:2px solid #F0B429;border-radius:12px;padding:14px;text-align:center;color:#fff;box-shadow:0 0 34px rgba(240,180,41,.25)">
+      <div class="k" style="color:#F0B429;font-size:9px;letter-spacing:.26em">THE FINAL · 26 SEPT · 18:00</div>
+      <div class="r" style="justify-content:center;gap:14px;margin:10px 0 6px">
+        <div class="col" style="align-items:center;gap:4px"><span class="tt lg" style="background:#C3C9D2;color:#6B7280">?</span><span class="tiny" style="color:#B9C0CD">Winner SF1</span></div>
+        <div class="bc" style="font:800 18px 'Barlow Condensed';color:#F0B429">VS</div>
+        <div class="col" style="align-items:center;gap:4px"><span class="tt lg" style="background:#C3C9D2;color:#6B7280">?</span><span class="tiny" style="color:#B9C0CD">Winner SF2</span></div>
+      </div>
+      <div class="tiny" style="color:#7A828F">Changlimithang Court · Thimphu</div>
+    </div>
+    <div style="font-size:22px">🏆</div>
+    <div class="k" style="color:#F0B429;font-size:8px;letter-spacing:.3em">NATIONAL CHAMPION</div>
+  </div>
+  <div class="conn2" style="border-color:rgba(240,180,41,.5)"></div>
+  <div class="col" style="gap:12px;align-items:flex-end">
+    <div class="tiny bc" style="font-weight:700;letter-spacing:.18em;color:#7A828F">POOL B SIDE</div>
+    <div class="bm" style="width:158px"><div class="hd"><span>QF2</span><span class="badge bLive" style="font-size:7px"><span class="dot"></span> LIVE</span></div>
+      <div class="rw win"><span class="tt" style="background:#C98A12;width:18px;height:18px;font-size:6px">HAT</span>Tigers<span class="sc" style="color:#E11D48">51</span></div>
+      <div class="rw"><span class="tt" style="background:#3E7A5A;width:18px;height:18px;font-size:6px">WDE</span>Eagles<span class="sc">48</span></div></div>
+    <div class="bm" style="width:158px"><div class="hd"><span>SF2</span><span class="badge bUp" style="font-size:7px">23 SEPT</span></div>
+      <div class="rw"><span class="tt" style="background:#7A1F2B;width:18px;height:18px;font-size:6px">PDR</span>Dragons <span class="tiny" style="color:#E8611C">B1</span><span class="sc mut">–</span></div>
+      <div class="rw"><span class="tt" style="background:#2E5EAA;width:18px;height:18px;font-size:6px">PNB</span>Bulls<span class="sc mut">–</span></div></div>
+  </div>
+</div>
+<div class="foot"><span>Pool winners enter at the Semi Finals · A2 v B3 and B2 v A3 in Quarter Finals</span><span></span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1l"><div class="dv-olabel"><a class="dv-oid" href="#1l">1l</a>Bracket — mobile (vertical)</div><div class="dv-card"><div class="m">
+<div class="flags"></div>
+<div class="mnav"><span class="mark" style="width:20px;height:20px;font-size:8px">BB</span><b class="bc" style="font-size:12px">PLAYOFF BRACKET</b><span class="grow"></span><span style="font-size:13px">☰</span></div>
+<div class="pad col" style="gap:8px;padding:12px">
+  <div class="tiny bc" style="font-weight:700;letter-spacing:.18em;color:#8A909C">QUARTER FINALS · 20 SEPT</div>
+  <div class="bm" style="width:100%"><div class="hd"><span>QF1</span><span class="badge bFin" style="font-size:7px">FINAL</span></div>
+    <div class="rw win"><span class="tt" style="background:#2E5EAA;width:18px;height:18px;font-size:6px">PNB</span>Punakha Bulls<span class="sc">74</span></div>
+    <div class="rw lose"><span class="tt" style="background:#5B4A9E;width:18px;height:18px;font-size:6px">BMF</span>Bumthang Falcons<span class="sc">66</span></div></div>
+  <div class="bm" style="width:100%"><div class="hd"><span>QF2</span><span class="badge bLive" style="font-size:7px"><span class="dot"></span> LIVE</span></div>
+    <div class="rw win"><span class="tt" style="background:#C98A12;width:18px;height:18px;font-size:6px">HAT</span>Haa Tigers<span class="sc" style="color:#E11D48">51</span></div>
+    <div class="rw"><span class="tt" style="background:#3E7A5A;width:18px;height:18px;font-size:6px">WDE</span>Wangdue Eagles<span class="sc">48</span></div></div>
+  <div style="height:14px;border-left:1.5px dashed #C9B48A;margin-left:14px"></div>
+  <div class="tiny bc" style="font-weight:700;letter-spacing:.18em;color:#8A909C">SEMI FINALS · 23 SEPT</div>
+  <div class="bm" style="width:100%"><div class="hd"><span>SF1 · A1 v QF2 winner</span><span class="badge bUp" style="font-size:7px">17:00</span></div>
+    <div class="rw"><span class="tt" style="background:#E8611C;width:18px;height:18px;font-size:6px">THW</span>Thimphu Warriors<span class="sc mut">–</span></div>
+    <div class="rw mut"><span class="tt" style="background:#C3C9D2;color:#6B7280;width:18px;height:18px;font-size:6px">?</span>Winner QF2<span class="sc">–</span></div></div>
+  <div class="bm" style="width:100%"><div class="hd"><span>SF2 · B1 v QF1 winner</span><span class="badge bUp" style="font-size:7px">19:30</span></div>
+    <div class="rw"><span class="tt" style="background:#7A1F2B;width:18px;height:18px;font-size:6px">PDR</span>Paro Dragons<span class="sc mut">–</span></div>
+    <div class="rw"><span class="tt" style="background:#2E5EAA;width:18px;height:18px;font-size:6px">PNB</span>Punakha Bulls<span class="sc mut">–</span></div></div>
+  <div style="height:14px;border-left:1.5px dashed #C9B48A;margin-left:14px"></div>
+  <div class="bm" style="width:100%;border:2px solid #F0B429"><div class="hd" style="background:#161B26;color:#F0B429"><span>FINAL · 26 SEPT · 18:00</span></div>
+    <div class="rw mut"><span class="tt" style="background:#C3C9D2;color:#6B7280;width:18px;height:18px;font-size:6px">?</span>Winner SF1<span class="sc">–</span></div>
+    <div class="rw mut"><span class="tt" style="background:#C3C9D2;color:#6B7280;width:18px;height:18px;font-size:6px">?</span>Winner SF2<span class="sc">–</span></div></div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1m"><div class="dv-olabel"><a class="dv-oid" href="#1m">1m</a>Women's round robin standings</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a>Fixtures</a><a class="on">Standings</a><a>Teams</a><a>Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="dhdr"><span class="k" style="color:#F0B429">WOMEN'S CHAMPIONSHIP 2026 · ROUND ROBIN</span><div class="h1" style="font-size:24px">Women's Standings</div></div>
+<div class="pad r" style="gap:7px;padding:10px 18px;background:#fff;border-bottom:1px solid #E3E1DA"><span class="chip">Men</span><span class="chip on">Women</span><span class="grow"></span><span class="r tiny mut"><span style="width:10px;height:10px;background:#FDF3EC;box-shadow:inset 3px 0 0 #E8611C;display:inline-block"></span> Top 2 reach the Final</span></div>
+<div class="pad r" style="gap:14px;padding:14px 18px;align-items:flex-start">
+  <div class="card grow" style="overflow:hidden"><table class="st">
+    <tr><th colspan="2" style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:.15em;color:#F0B429">ROUND ROBIN</th><th class="n">P</th><th class="n">W</th><th class="n">L</th><th class="n">PF</th><th class="n">PA</th><th class="n">PD</th><th class="n">PTS</th><th style="text-align:right">FORM</th></tr>
+    <tr class="q"><td class="n" style="width:20px"><span class="pos">1</span></td><td><span class="r"><span class="tt" style="background:#A2335C">TQN</span><b>Thimphu Queens</b> <span class="badge" style="background:#F0B429;color:#161B26;font-size:6.5px">FINALIST</span></span></td><td class="n">4</td><td class="n">4</td><td class="n">0</td><td class="n">241</td><td class="n">198</td><td class="n" style="color:#2F855A">+43</td><td class="n"><b>8</b></td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fw">W</span><span class="fw">W</span><span class="fw">W</span><span class="fw">W</span></span></td></tr>
+    <tr class="q"><td class="n"><span class="pos">2</span></td><td><span class="r"><span class="tt" style="background:#D9652B">PPX</span><b>Paro Phoenix</b> <span class="badge" style="background:#F0B429;color:#161B26;font-size:6.5px">FINALIST</span></span></td><td class="n">4</td><td class="n">3</td><td class="n">1</td><td class="n">226</td><td class="n">204</td><td class="n" style="color:#2F855A">+22</td><td class="n"><b>7</b></td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fw">W</span><span class="fl">L</span><span class="fw">W</span><span class="fw">W</span></span></td></tr>
+    <tr><td class="n"><span class="pos">3</span></td><td><span class="r"><span class="tt" style="background:#4E7A9E">PPL</span>Punakha Pearls</span></td><td class="n">4</td><td class="n">2</td><td class="n">2</td><td class="n">210</td><td class="n">208</td><td class="n" style="color:#2F855A">+2</td><td class="n">6</td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fl">L</span><span class="fw">W</span><span class="fw">W</span><span class="fl">L</span></span></td></tr>
+    <tr><td class="n"><span class="pos">4</span></td><td><span class="r"><span class="tt" style="background:#5E548E">WVK</span>Wangdue Valkyries</span></td><td class="n">4</td><td class="n">2</td><td class="n">2</td><td class="n">201</td><td class="n">211</td><td class="n" style="color:#B3282D">−10</td><td class="n">6</td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fw">W</span><span class="fw">W</span><span class="fl">L</span><span class="fl">L</span></span></td></tr>
+    <tr><td class="n"><span class="pos">5</span></td><td><span class="r"><span class="tt" style="background:#37423D">HRV</span>Haa Ravens</span></td><td class="n">4</td><td class="n">1</td><td class="n">3</td><td class="n">192</td><td class="n">220</td><td class="n" style="color:#B3282D">−28</td><td class="n">5</td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fl">L</span><span class="fl">L</span><span class="fw">W</span><span class="fl">L</span></span></td></tr>
+    <tr><td class="n"><span class="pos">6</span></td><td><span class="r"><span class="tt" style="background:#C98A12">GCM</span>Gelephu Comets</span></td><td class="n">4</td><td class="n">0</td><td class="n">4</td><td class="n">185</td><td class="n">214</td><td class="n" style="color:#B3282D">−29</td><td class="n">4</td><td><span class="r" style="justify-content:flex-end;gap:2px"><span class="fl">L</span><span class="fl">L</span><span class="fl">L</span><span class="fl">L</span></span></td></tr>
+  </table></div>
+  <div class="col" style="width:250px;gap:8px">
+    <div class="card" style="background:linear-gradient(160deg,#161B26,#2a3550);border:none;color:#fff;text-align:center;padding:14px">
+      <span class="k" style="color:#F0B429;font-size:8.5px;letter-spacing:.24em">WOMEN'S FINAL · 25 SEPT</span>
+      <div class="r" style="justify-content:center;gap:12px;margin:10px 0 6px">
+        <div class="col" style="align-items:center;gap:4px"><span class="tt lg" style="background:#A2335C">TQN</span><b class="tiny">Queens</b><span class="tiny" style="color:#7A828F">1st</span></div>
+        <div class="bc" style="font:800 16px 'Barlow Condensed';color:#F0B429">VS</div>
+        <div class="col" style="align-items:center;gap:4px"><span class="tt lg" style="background:#D9652B">PPX</span><b class="tiny">Phoenix</b><span class="tiny" style="color:#7A828F">2nd</span></div>
+      </div>
+      <span class="b o sm">Match preview →</span>
+    </div>
+    <div class="card pad"><b class="h3">Remaining Round Robin</b>
+      <div class="col" style="gap:6px;margin-top:7px">
+        <div class="r sb tiny"><span>PPL v HRV</span><span class="mut">14 Sep · 13:00</span></div>
+        <div class="r sb tiny"><span>WVK v GCM</span><span class="mut">14 Sep · 15:30</span></div>
+      </div></div>
+  </div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span>Round robin → top two contest the Final</span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1n"><div class="dv-olabel"><a class="dv-oid" href="#1n">1n</a>Women's final — with champion state</div><div class="dv-card"><div class="scr" style="background:#161B26">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a>Fixtures</a><a>Standings</a><a>Teams</a><a>Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div style="text-align:center;padding:26px 20px 30px;color:#fff;position:relative;overflow:hidden">
+  <div class="arc" style="width:480px;height:480px;left:50%;top:-300px;transform:translateX(-50%)"></div>
+  <svg class="mtns" height="46" width="100%" viewBox="0 0 860 46" preserveAspectRatio="none"><path d="M0,46 L120,12 L220,34 L340,6 L460,36 L590,10 L700,32 L860,16 L860,46 Z" fill="#0E1119"></path></svg>
+  <span class="k" style="color:#F0B429;letter-spacing:.3em">WOMEN'S CHAMPIONSHIP · THE FINAL · 25 SEPTEMBER</span>
+  <div class="r" style="justify-content:center;gap:30px;margin:18px 0 10px;position:relative">
+    <div class="col" style="align-items:center;gap:6px"><span class="tt xl" style="background:#A2335C">TQN</span><b class="h2" style="color:#fff">Thimphu Queens</b><span class="tiny" style="color:#7A828F">Round robin 1st · 4–0</span></div>
+    <div class="col" style="align-items:center;gap:2px"><span class="score" style="font-size:34px;color:#F0B429">61</span><span class="badge bFin">FINAL</span><span class="score" style="font-size:34px;color:#5B6472">54</span></div>
+    <div class="col" style="align-items:center;gap:6px"><span class="tt xl" style="background:#D9652B">PPX</span><b class="h2" style="color:#B9C0CD">Paro Phoenix</b><span class="tiny" style="color:#7A828F">Round robin 2nd · 3–1</span></div>
+  </div>
+  <div style="display:inline-flex;align-items:center;gap:9px;background:linear-gradient(90deg,#F0B429,#E8611C);color:#161B26;border-radius:999px;padding:7px 20px;font:800 13px 'Barlow Condensed';letter-spacing:.14em;box-shadow:0 4px 20px rgba(240,180,41,.4)">🏆 THIMPHU QUEENS — WOMEN'S CHAMPIONS 2026</div>
+</div>
+<div class="pad r" style="gap:12px;padding:14px 18px;background:#F7F5F1">
+  <div class="card grow" style="overflow:hidden"><table class="qtr">
+    <tr><th>QUARTERS</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>T</th></tr>
+    <tr><td><span class="r" style="gap:5px"><span class="tt" style="width:16px;height:16px;font-size:5.5px;background:#A2335C">TQN</span>Queens</span></td><td>16</td><td>14</td><td>15</td><td>16</td><td><b>61</b></td></tr>
+    <tr><td><span class="r" style="gap:5px"><span class="tt" style="width:16px;height:16px;font-size:5.5px;background:#D9652B">PPX</span>Phoenix</span></td><td>12</td><td>15</td><td>13</td><td>14</td><td><b>54</b></td></tr>
+  </table></div>
+  <div class="card grow pad"><b class="h3">Path to the title</b>
+    <div class="col" style="gap:5px;margin-top:6px">
+      <div class="r sb tiny"><span>Round robin — 1st place, 4–0</span><span class="fw" style="width:auto;padding:0 5px;border-radius:3px">QUALIFIED</span></div>
+      <div class="r sb tiny"><span>Final vs Paro Phoenix</span><b style="color:#E8611C">W 61–54</b></div>
+    </div></div>
+  <div class="card grow pad" style="text-align:center"><b class="h3">Full match centre</b><div class="tiny mut" style="margin:5px 0 8px">Quarter scores, fouls, player stats</div><span class="b dk sm">Open match centre →</span></div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span></span></div>
+</div></div></div>
+
+<div class="dv-grp">PUBLIC — TEAMS · MATCH CENTRE</div>
+
+<div class="dv-opt" id="1o"><div class="dv-olabel"><a class="dv-oid" href="#1o">1o</a>Teams listing</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a>Fixtures</a><a>Standings</a><a class="on">Teams</a><a>Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="dhdr"><span class="k" style="color:#F0B429">NATIONAL CHAMPIONSHIP 2026</span><div class="h1" style="font-size:24px">Teams</div></div>
+<div class="pad r" style="gap:7px;padding:10px 18px;background:#fff;border-bottom:1px solid #E3E1DA"><span class="sel">National Championship 2026</span><span class="chip on">Men</span><span class="chip">Women</span><span class="chip">Pool A</span><span class="chip">Pool B</span></div>
+<div class="pad" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 18px">
+  <div class="card pad" style="text-align:center;border-top:3px solid #E8611C"><span class="tt lg" style="background:#E8611C;margin:0 auto">THW</span><b class="h3" style="display:block;margin:7px 0 1px">Thimphu Warriors</b><span class="tiny mut">Pool A · Thimphu</span><div class="r" style="justify-content:center;gap:10px;margin-top:7px;border-top:1px solid #EEECE6;padding-top:7px"><span class="tiny"><b class="mono">5</b> P</span><span class="tiny" style="color:#2F855A"><b class="mono">4</b> W</span><span class="tiny" style="color:#B3282D"><b class="mono">1</b> L</span></div></div>
+  <div class="card pad" style="text-align:center;border-top:3px solid #7A1F2B"><span class="tt lg" style="background:#7A1F2B;margin:0 auto">PDR</span><b class="h3" style="display:block;margin:7px 0 1px">Paro Dragons</b><span class="tiny mut">Pool B · Paro</span><div class="r" style="justify-content:center;gap:10px;margin-top:7px;border-top:1px solid #EEECE6;padding-top:7px"><span class="tiny"><b class="mono">5</b> P</span><span class="tiny" style="color:#2F855A"><b class="mono">4</b> W</span><span class="tiny" style="color:#B3282D"><b class="mono">1</b> L</span></div></div>
+  <div class="card pad" style="text-align:center;border-top:3px solid #2E5EAA"><span class="tt lg" style="background:#2E5EAA;margin:0 auto">PNB</span><b class="h3" style="display:block;margin:7px 0 1px">Punakha Bulls</b><span class="tiny mut">Pool A · Punakha</span><div class="r" style="justify-content:center;gap:10px;margin-top:7px;border-top:1px solid #EEECE6;padding-top:7px"><span class="tiny"><b class="mono">5</b> P</span><span class="tiny" style="color:#2F855A"><b class="mono">3</b> W</span><span class="tiny" style="color:#B3282D"><b class="mono">2</b> L</span></div></div>
+  <div class="card pad" style="text-align:center;border-top:3px solid #C98A12"><span class="tt lg" style="background:#C98A12;margin:0 auto">HAT</span><b class="h3" style="display:block;margin:7px 0 1px">Haa Tigers</b><span class="tiny mut">Pool B · Haa</span><div class="r" style="justify-content:center;gap:10px;margin-top:7px;border-top:1px solid #EEECE6;padding-top:7px"><span class="tiny"><b class="mono">5</b> P</span><span class="tiny" style="color:#2F855A"><b class="mono">4</b> W</span><span class="tiny" style="color:#B3282D"><b class="mono">1</b> L</span></div></div>
+  <div class="card pad" style="text-align:center;border-top:3px solid #3E7A5A"><span class="tt lg" style="background:#3E7A5A;margin:0 auto">WDE</span><b class="h3" style="display:block;margin:7px 0 1px">Wangdue Eagles</b><span class="tiny mut">Pool A · Wangdue</span><div class="r" style="justify-content:center;gap:10px;margin-top:7px;border-top:1px solid #EEECE6;padding-top:7px"><span class="tiny"><b class="mono">5</b> P</span><span class="tiny" style="color:#2F855A"><b class="mono">3</b> W</span><span class="tiny" style="color:#B3282D"><b class="mono">2</b> L</span></div></div>
+  <div class="card pad" style="text-align:center;border-top:3px solid #5B4A9E"><span class="tt lg" style="background:#5B4A9E;margin:0 auto">BMF</span><b class="h3" style="display:block;margin:7px 0 1px">Bumthang Falcons</b><span class="tiny mut">Pool B · Bumthang</span><div class="r" style="justify-content:center;gap:10px;margin-top:7px;border-top:1px solid #EEECE6;padding-top:7px"><span class="tiny"><b class="mono">5</b> P</span><span class="tiny" style="color:#2F855A"><b class="mono">2</b> W</span><span class="tiny" style="color:#B3282D"><b class="mono">3</b> L</span></div></div>
+  <div class="card pad" style="text-align:center;border-top:3px solid #444B57"><span class="tt lg" style="background:#444B57;margin:0 auto">TRT</span><b class="h3" style="display:block;margin:7px 0 1px">Trongsa Titans</b><span class="tiny mut">Pool A · Trongsa</span><div class="r" style="justify-content:center;gap:10px;margin-top:7px;border-top:1px solid #EEECE6;padding-top:7px"><span class="tiny"><b class="mono">5</b> P</span><span class="tiny" style="color:#2F855A"><b class="mono">2</b> W</span><span class="tiny" style="color:#B3282D"><b class="mono">3</b> L</span></div></div>
+  <div class="card pad" style="text-align:center;border-top:3px solid #C1462F"><span class="tt lg" style="background:#C1462F;margin:0 auto">MGC</span><b class="h3" style="display:block;margin:7px 0 1px">Mongar Chargers</b><span class="tiny mut">Pool B · Mongar</span><div class="r" style="justify-content:center;gap:10px;margin-top:7px;border-top:1px solid #EEECE6;padding-top:7px"><span class="tiny"><b class="mono">5</b> P</span><span class="tiny" style="color:#2F855A"><b class="mono">2</b> W</span><span class="tiny" style="color:#B3282D"><b class="mono">3</b> L</span></div></div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span>10 men's teams · 6 women's teams</span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1p"><div class="dv-olabel"><a class="dv-oid" href="#1p">1p</a>Team profile — public</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a>Fixtures</a><a>Standings</a><a class="on">Teams</a><a>Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="dhdr" style="padding:18px;background:linear-gradient(120deg,#161B26 40%,#3a2416)">
+  <div class="arc" style="width:280px;height:280px;right:-80px;top:-140px;border-color:rgba(232,97,28,.25)"></div>
+  <div class="r" style="gap:16px;position:relative">
+    <span class="tt xl" style="background:#E8611C;width:70px;height:70px;font-size:21px">THW</span>
+    <div class="col" style="gap:3px">
+      <span class="k" style="color:#F0B429">NATIONAL CHAMPIONSHIP 2026 · MEN'S POOL A · THIMPHU</span>
+      <div class="h1" style="font-size:26px">Thimphu Warriors</div>
+      <div class="r"><span class="tiny" style="color:#B9C0CD">Form</span><span class="fw">W</span><span class="fw">W</span><span class="fw">W</span><span class="fl" style="background:#39404C;color:#B9C0CD">L</span><span class="fw">W</span></div>
+    </div>
+    <span class="grow"></span>
+    <div class="r" style="gap:8px">
+      <div class="col" style="align-items:center"><span class="score" style="color:#F0B429">1st</span><span class="tiny" style="color:#7A828F">POOL A</span></div>
+      <div class="col" style="align-items:center"><span class="score">4–1</span><span class="tiny" style="color:#7A828F">W–L</span></div>
+      <div class="col" style="align-items:center"><span class="score">+60</span><span class="tiny" style="color:#7A828F">PD</span></div>
+      <div class="col" style="align-items:center"><span class="score">9</span><span class="tiny" style="color:#7A828F">PTS</span></div>
+    </div>
+  </div>
+</div>
+<div class="pad r" style="gap:12px;align-items:flex-start;padding:14px 18px">
+  <div class="col grow" style="gap:8px">
+    <b class="h3">Squad</b>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div class="card" style="overflow:hidden"><div class="ph" style="height:52px">#7</div><div style="padding:6px 8px"><b style="font-size:10px">Sonam Wangchuk</b><div class="tiny mut">Point Guard · PG</div></div></div>
+      <div class="card" style="overflow:hidden"><div class="ph" style="height:52px">#11</div><div style="padding:6px 8px"><b style="font-size:10px">Karma Tenzin</b><div class="tiny mut">Shooting Guard · SG</div></div></div>
+      <div class="card" style="overflow:hidden"><div class="ph" style="height:52px">#23</div><div style="padding:6px 8px"><b style="font-size:10px">Jigme Dorji</b><div class="tiny mut">Small Forward · SF</div></div></div>
+      <div class="card" style="overflow:hidden"><div class="ph" style="height:52px">#34</div><div style="padding:6px 8px"><b style="font-size:10px">Tashi Norbu</b><div class="tiny mut">Power Forward · PF</div></div></div>
+      <div class="card" style="overflow:hidden"><div class="ph" style="height:52px">#15</div><div style="padding:6px 8px"><b style="font-size:10px">Ugyen Dendup</b><div class="tiny mut">Center · C</div></div></div>
+      <div class="card" style="overflow:hidden"><div class="ph" style="height:52px">#4</div><div style="padding:6px 8px"><b style="font-size:10px">Pema Gyeltshen</b><div class="tiny mut">Point Guard · PG</div></div></div>
+      <div class="card" style="overflow:hidden"><div class="ph" style="height:52px">#9</div><div style="padding:6px 8px"><b style="font-size:10px">Kinley Rabgay</b><div class="tiny mut">Shooting Guard · SG</div></div></div>
+      <div class="card" style="overflow:hidden;display:grid;place-items:center;color:#8A909C;font-size:9.5px;border-style:dashed">+ 5 more players</div>
+    </div>
+    <b class="h3" style="margin-top:4px">Team statistics</b>
+    <div class="card pad r" style="gap:16px">
+      <div class="col grow" style="gap:3px"><span class="tiny mut">Points per game</span><div class="r"><b class="mono">82.0</b><span class="bar grow"><i style="width:82%"></i></span></div></div>
+      <div class="col grow" style="gap:3px"><span class="tiny mut">Points allowed</span><div class="r"><b class="mono">70.0</b><span class="bar grow"><i style="width:70%;background:#5B6472"></i></span></div></div>
+      <div class="col grow" style="gap:3px"><span class="tiny mut">Avg margin</span><div class="r"><b class="mono" style="color:#2F855A">+12.0</b><span class="bar grow"><i style="width:40%;background:#2F855A"></i></span></div></div>
+    </div>
+  </div>
+  <div class="col" style="width:250px;gap:8px">
+    <b class="h3">Upcoming</b>
+    <div class="card pad" style="padding:9px 11px"><div class="r sb"><span class="badge bUp">SAT 10:00</span><span class="chip" style="font-size:8px">Pool A</span></div><div class="r" style="margin-top:6px"><span class="tt" style="background:#7A1F2B">PDR</span><b>vs Paro Dragons</b></div></div>
+    <b class="h3">Previous results</b>
+    <div class="card">
+      <div class="r sb" style="padding:7px 10px;border-bottom:1px solid #EEECE6"><span class="r tiny"><span class="fw">W</span>vs Bulls</span><b class="mono tiny">78–71</b></div>
+      <div class="r sb" style="padding:7px 10px;border-bottom:1px solid #EEECE6"><span class="r tiny"><span class="fw">W</span>vs Eagles</span><b class="mono tiny">85–74</b></div>
+      <div class="r sb" style="padding:7px 10px;border-bottom:1px solid #EEECE6"><span class="r tiny"><span class="fl">L</span>vs Titans</span><b class="mono tiny">69–72</b></div>
+      <div class="r sb" style="padding:7px 10px"><span class="r tiny"><span class="fw">W</span>vs Storm</span><b class="mono tiny">96–58</b></div>
+    </div>
+  </div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span>View only — managed by tournament admins</span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1q"><div class="dv-olabel"><a class="dv-oid" href="#1q">1q</a>Match detail — final</div><div class="dv-card"><div class="scr">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a>Fixtures</a><a>Standings</a><a>Teams</a><a class="on">Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div class="dhdr" style="text-align:center;padding:20px 18px">
+  <span class="k" style="color:#F0B429">MEN'S POOL A · ROUND 5 · 11 SEPT · CHANGLIMITHANG COURT</span>
+  <div class="r" style="justify-content:center;gap:26px;margin-top:12px">
+    <div class="col" style="align-items:center;gap:5px"><span class="tt xl" style="background:#E8611C">THW</span><b class="h2" style="color:#fff">Thimphu Warriors</b><span class="tiny" style="color:#7A828F">4–1 · 1st Pool A</span></div>
+    <div class="col" style="align-items:center;gap:3px"><span class="score" style="font-size:32px;color:#F0B429">82</span><span class="badge bFin">FINAL</span><span class="score" style="font-size:32px;color:#5B6472">75</span></div>
+    <div class="col" style="align-items:center;gap:5px"><span class="tt xl" style="background:#7A1F2B">PDR</span><b class="h2" style="color:#B9C0CD">Paro Dragons</b><span class="tiny" style="color:#7A828F">4–1 · 1st Pool B</span></div>
+  </div>
+</div>
+<div class="pad r" style="gap:12px;padding:14px 18px;align-items:flex-start">
+  <div class="col" style="width:300px;gap:8px">
+    <div class="card" style="overflow:hidden"><table class="qtr">
+      <tr><th>QUARTERS</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>T</th></tr>
+      <tr><td><span class="r" style="gap:5px"><span class="tt" style="width:16px;height:16px;font-size:5.5px;background:#E8611C">THW</span>Warriors</span></td><td>22</td><td>18</td><td>20</td><td>22</td><td><b>82</b></td></tr>
+      <tr><td><span class="r" style="gap:5px"><span class="tt" style="width:16px;height:16px;font-size:5.5px;background:#7A1F2B">PDR</span>Dragons</span></td><td>19</td><td>21</td><td>16</td><td>19</td><td><b>75</b></td></tr>
+    </table></div>
+    <div class="card pad"><b class="h3">Match info</b>
+      <div class="col" style="gap:5px;margin-top:6px">
+        <div class="r sb tiny"><span class="mut">Competition</span><b>National Championship</b></div>
+        <div class="r sb tiny"><span class="mut">Pool · Round</span><b>Pool A · Round 5</b></div>
+        <div class="r sb tiny"><span class="mut">Venue</span><b>Changlimithang Court 1</b></div>
+        <div class="r sb tiny"><span class="mut">Date</span><b>Thu 11 Sept · 17:00</b></div>
+      </div></div>
+  </div>
+  <div class="col grow" style="gap:8px">
+    <div class="card pad"><b class="h3">Team stats</b>
+      <div class="col" style="gap:7px;margin-top:8px">
+        <div class="r" style="gap:8px"><b class="mono tiny" style="width:22px;text-align:right">18</b><span class="bar grow" style="direction:rtl"><i style="width:75%"></i></span><span class="tiny mut" style="width:80px;text-align:center">Fouls</span><span class="bar grow"><i style="width:88%;background:#7A1F2B"></i></span><b class="mono tiny" style="width:22px">21</b></div>
+        <div class="r" style="gap:8px"><b class="mono tiny" style="width:22px;text-align:right">4</b><span class="bar grow" style="direction:rtl"><i style="width:66%"></i></span><span class="tiny mut" style="width:80px;text-align:center">Timeouts used</span><span class="bar grow"><i style="width:100%;background:#7A1F2B"></i></span><b class="mono tiny" style="width:22px">6</b></div>
+        <div class="r" style="gap:8px"><b class="mono tiny" style="width:22px;text-align:right">34</b><span class="bar grow" style="direction:rtl"><i style="width:85%"></i></span><span class="tiny mut" style="width:80px;text-align:center">Field goals</span><span class="bar grow"><i style="width:74%;background:#7A1F2B"></i></span><b class="mono tiny" style="width:22px">30</b></div>
+      </div></div>
+    <div class="r" style="gap:8px;align-items:flex-start">
+      <div class="card grow" style="overflow:hidden"><div class="hd r sb" style="padding:5px 10px;background:#F1EFE9"><b class="tiny">TOP SCORERS — THW</b></div>
+        <div class="r sb" style="padding:6px 10px;border-bottom:1px solid #EEECE6"><span class="tiny">#7 Sonam Wangchuk · PG</span><b class="mono tiny">24 PTS</b></div>
+        <div class="r sb" style="padding:6px 10px;border-bottom:1px solid #EEECE6"><span class="tiny">#23 Jigme Dorji · SF</span><b class="mono tiny">19 PTS</b></div>
+        <div class="r sb" style="padding:6px 10px"><span class="tiny">#34 Tashi Norbu · PF</span><b class="mono tiny">14 PTS</b></div></div>
+      <div class="card grow" style="overflow:hidden"><div class="hd r sb" style="padding:5px 10px;background:#F1EFE9"><b class="tiny">TOP SCORERS — PDR</b></div>
+        <div class="r sb" style="padding:6px 10px;border-bottom:1px solid #EEECE6"><span class="tiny">#10 Chencho Gyeltshen · SG</span><b class="mono tiny">22 PTS</b></div>
+        <div class="r sb" style="padding:6px 10px;border-bottom:1px solid #EEECE6"><span class="tiny">#5 Nima Tshering · PG</span><b class="mono tiny">17 PTS</b></div>
+        <div class="r sb" style="padding:6px 10px"><span class="tiny">#21 Sangay Phuntsho · C</span><b class="mono tiny">15 PTS</b></div></div>
+    </div>
+    <div class="r" style="gap:8px"><span class="b gh sm">Warriors squad</span><span class="b gh sm">Dragons squad</span><span class="grow"></span><a class="tiny">Pool A standings →</a></div>
+  </div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span></span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1r"><div class="dv-olabel"><a class="dv-oid" href="#1r">1r</a>Live match view</div><div class="dv-card"><div class="scr" style="background:#161B26">
+<div class="flags"></div>
+<div class="pnav"><span class="mark">BB</span><span class="wordmark bc">BHUTAN BASKETBALL<small>NATIONAL TOURNAMENT PLATFORM</small></span><span class="grow"></span><a>Home</a><a>Competitions</a><a class="on">Fixtures</a><a>Standings</a><a>Teams</a><a>Results</a><a>Bracket</a><span class="b ghd sm">Admin Login</span></div>
+<div style="text-align:center;padding:18px;color:#fff;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% -30%,rgba(225,29,72,.25),transparent 60%)">
+  <div class="r" style="justify-content:center;gap:8px"><span class="badge bLive" style="font-size:9px;padding:2px 9px"><span class="dot"></span> LIVE</span><span class="k" style="color:#F0B429">MEN'S POOL A · CHANGLIMITHANG COURT 1</span></div>
+  <div class="r" style="justify-content:center;gap:26px;margin-top:12px">
+    <div class="col" style="align-items:center;gap:5px"><span class="tt xl" style="background:#E8611C">THW</span><b class="h2" style="color:#fff">Thimphu Warriors</b></div>
+    <div class="col" style="align-items:center;gap:4px">
+      <div class="r" style="gap:12px"><span class="score" style="font-size:38px;color:#fff">72</span><span class="score" style="font-size:38px;color:#5B6472">68</span></div>
+      <div style="background:#0E1119;border:1px solid #39404C;border-radius:6px;padding:3px 14px" class="r"><b class="bc" style="color:#E11D48;font-size:12px">Q4</b><span class="mono" style="font-size:14px;color:#F0B429">03:42</span></div>
+      <span class="tiny" style="color:#7A828F">Warriors lead by 4 · timeout Paro</span>
+    </div>
+    <div class="col" style="align-items:center;gap:5px"><span class="tt xl" style="background:#7A1F2B">PDR</span><b class="h2" style="color:#B9C0CD">Paro Dragons</b></div>
+  </div>
+</div>
+<div class="pad r" style="gap:12px;padding:14px 18px;background:#F7F5F1;align-items:flex-start">
+  <div class="card" style="width:290px;overflow:hidden"><table class="qtr">
+    <tr><th>LIVE QUARTERS</th><th>Q1</th><th>Q2</th><th>Q3</th><th style="color:#E11D48">Q4</th><th>T</th></tr>
+    <tr><td><span class="r" style="gap:5px"><span class="tt" style="width:16px;height:16px;font-size:5.5px;background:#E8611C">THW</span>Warriors</span></td><td>20</td><td>17</td><td>21</td><td style="color:#E11D48">14</td><td><b>72</b></td></tr>
+    <tr><td><span class="r" style="gap:5px"><span class="tt" style="width:16px;height:16px;font-size:5.5px;background:#7A1F2B">PDR</span>Dragons</span></td><td>18</td><td>19</td><td>15</td><td style="color:#E11D48">16</td><td><b>68</b></td></tr>
+  </table></div>
+  <div class="card grow pad"><b class="h3">Live play-by-play</b>
+    <div class="col" style="gap:6px;margin-top:7px">
+      <div class="r tiny"><span class="mono mut" style="width:36px">03:42</span><span class="tt" style="width:15px;height:15px;font-size:5px;background:#7A1F2B">PDR</span>Timeout — Paro Dragons</div>
+      <div class="r tiny"><span class="mono mut" style="width:36px">03:58</span><span class="tt" style="width:15px;height:15px;font-size:5px;background:#E8611C">THW</span><b>#7 Wangchuk hits a three</b> · 72–68</div>
+      <div class="r tiny"><span class="mono mut" style="width:36px">04:31</span><span class="tt" style="width:15px;height:15px;font-size:5px;background:#7A1F2B">PDR</span>#10 Gyeltshen scores inside · 69–68</div>
+      <div class="r tiny"><span class="mono mut" style="width:36px">05:02</span><span class="tt" style="width:15px;height:15px;font-size:5px;background:#E8611C">THW</span>#34 Norbu free throws 2/2 · 69–66</div>
+    </div></div>
+  <div class="col" style="width:180px;gap:8px">
+    <div class="card pad" style="text-align:center;background:#FDF3EC;border-color:#F3D2BC"><span class="tiny" style="color:#B3441A">Auto-refreshing every 30s</span></div>
+    <div class="card pad"><b class="h3">Fouls</b><div class="r sb tiny" style="margin-top:5px"><span>THW</span><b class="mono">6 team</b></div><div class="r sb tiny"><span>PDR</span><b class="mono">8 team</b></div></div>
+  </div>
+</div>
+<div class="foot"><span>© Bhutan Basketball Federation 2026</span><span></span></div>
+</div></div></div>
+
+<div class="dv-grp">ADMIN — LOGIN · DASHBOARD (2 OPTIONS)</div>
+
+<div class="dv-opt" id="1s"><div class="dv-olabel"><a class="dv-oid" href="#1s">1s</a>Admin login</div><div class="dv-card"><div class="scr" style="height:420px;background:linear-gradient(120deg,#161B26 40%,#25304a);position:relative;display:grid;place-items:center;overflow:hidden">
+<div class="arc" style="width:500px;height:500px;right:-180px;top:-260px"></div>
+<svg class="mtns" height="70" width="100%" viewBox="0 0 860 70" preserveAspectRatio="none" style="opacity:.5"><path d="M0,70 L110,22 L200,50 L330,8 L470,52 L600,14 L710,44 L860,20 L860,70 Z" fill="#0E1119"></path></svg>
+<div style="width:280px;background:#fff;border-radius:12px;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.45);position:relative">
+  <div class="dz" style="border-radius:12px 12px 0 0;position:absolute;top:0;left:0;right:0"></div>
+  <div class="col" style="align-items:center;gap:4px;margin:6px 0 14px"><span class="mark" style="width:36px;height:36px;font-size:12px">BB</span><b class="h3">TOURNAMENT ADMIN</b><span class="tiny mut">Bhutan Basketball Federation · Staff only</span></div>
+  <div class="col" style="gap:9px">
+    <div class="col" style="gap:3px"><span class="lbl">Email</span><span class="fld">admin@bhutanbasketball.bt</span></div>
+    <div class="col" style="gap:3px"><span class="lbl">Password</span><span class="fld">••••••••••</span></div>
+    <div class="r sb"><span class="r tiny mut"><span style="width:10px;height:10px;border:1px solid #C9CDD6;border-radius:2px;display:inline-block"></span> Remember me</span><a class="tiny">Forgot password?</a></div>
+    <span class="b o" style="justify-content:center;padding:7px">Sign in to Admin</span>
+    <div class="tiny mut" style="text-align:center">🔒 Secure area — activity is logged</div>
+  </div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1t"><div class="dv-olabel"><a class="dv-oid" href="#1t">1t</a>Admin dashboard — option A: overview + quick actions</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside">
+  <div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px;letter-spacing:.05em">BB ADMIN</b></div>
+  <div class="ai on"><span class="ic">▦</span>Dashboard</div>
+  <div class="asec">Tournament</div>
+  <div class="ai"><span class="ic">🏆</span>Competitions</div><div class="ai"><span class="ic">👥</span>Teams</div><div class="ai"><span class="ic">🧍</span>Players</div><div class="ai"><span class="ic">📝</span>Registration</div>
+  <div class="asec">Structure</div>
+  <div class="ai"><span class="ic">◲</span>Pools</div><div class="ai"><span class="ic">🎡</span>Fixture Draw</div><div class="ai"><span class="ic">📅</span>Fixtures</div><div class="ai"><span class="ic">🗂</span>Results</div><div class="ai"><span class="ic">📊</span>Standings</div><div class="ai"><span class="ic">🏁</span>Brackets</div>
+  <div class="asec">Matchday</div>
+  <div class="ai" style="color:#FF7A93"><span class="ic">●</span>Live Games <span style="margin-left:auto;background:#E11D48;color:#fff;border-radius:8px;padding:0 5px;font-size:8px">1</span></div>
+  <div class="ai"><span class="ic">⚙</span>Settings</div>
+</div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Dashboard</b><span class="chip">National Championship 2026 ▾</span><span class="grow"></span><span class="fld" style="width:130px">🔍 Search teams, players…</span><span class="tt" style="background:#E8611C;width:22px;height:22px;font-size:8px">TD</span></div>
+<div class="dz"></div>
+<div class="pad col" style="gap:10px;padding:12px 14px;background:#F7F5F1">
+  <div class="r" style="gap:8px">
+    <div class="kpi"><div class="l">Total Teams</div><div class="v">16</div></div>
+    <div class="kpi"><div class="l">Total Players</div><div class="v">184</div></div>
+    <div class="kpi"><div class="l">Upcoming</div><div class="v">6</div></div>
+    <div class="kpi" style="border-color:#E11D48"><div class="l" style="color:#E11D48">● Live now</div><div class="v" style="color:#E11D48">1</div></div>
+    <div class="kpi"><div class="l">Completed</div><div class="v">23</div></div>
+    <div class="kpi"><div class="l">Tournament</div><div class="v" style="font-size:13px;line-height:1.3">Pool round<br><span class="bar" style="margin-top:2px"><i style="width:79%"></i></span></div></div>
+  </div>
+  <div class="r" style="gap:8px">
+    <span class="b o">＋ Register Team</span><span class="b dk">＋ Add Player</span><span class="b gh">＋ Create Fixture</span><span class="b gh">🎡 Start Pool Draw</span><span class="b gh">✎ Enter Result</span><span class="b" style="background:#E11D48;color:#fff">● Go Live</span>
+  </div>
+  <div class="r" style="gap:10px;align-items:flex-start">
+    <div class="card grow" style="overflow:hidden"><div class="r sb" style="padding:6px 11px;background:#F1EFE9"><b class="tiny">TODAY'S FIXTURES</b><a class="tiny">Manage →</a></div>
+      <div class="r sb" style="padding:7px 11px;border-bottom:1px solid #EEECE6"><span class="r tiny"><span class="badge bLive" style="font-size:6.5px"><span class="dot"></span> LIVE</span>THW v PDR · Q4 03:42</span><span class="b sm" style="background:#E11D48;color:#fff">Score panel</span></div>
+      <div class="r sb" style="padding:7px 11px;border-bottom:1px solid #EEECE6"><span class="r tiny"><span class="mono">12:30</span>PNB v HAT · Pool B</span><span class="b sm gh">Start match</span></div>
+      <div class="r sb" style="padding:7px 11px"><span class="r tiny"><span class="mono">15:00</span>TQN v PPX · Women</span><span class="b sm gh">Start match</span></div>
+    </div>
+    <div class="card" style="width:220px;overflow:hidden"><div style="padding:6px 11px;background:#F1EFE9"><b class="tiny">LEADERS</b></div>
+      <div class="r sb" style="padding:6px 11px;border-bottom:1px solid #EEECE6"><span class="tiny mut">Pool A</span><span class="r tiny"><span class="tt" style="width:16px;height:16px;font-size:5.5px;background:#E8611C">THW</span><b>Warriors 4-1</b></span></div>
+      <div class="r sb" style="padding:6px 11px;border-bottom:1px solid #EEECE6"><span class="tiny mut">Pool B</span><span class="r tiny"><span class="tt" style="width:16px;height:16px;font-size:5.5px;background:#7A1F2B">PDR</span><b>Dragons 4-1</b></span></div>
+      <div class="r sb" style="padding:6px 11px"><span class="tiny mut">Women</span><span class="r tiny"><span class="tt" style="width:16px;height:16px;font-size:5.5px;background:#A2335C">TQN</span><b>Queens 4-0</b></span></div>
+    </div>
+  </div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1u"><div class="dv-olabel"><a class="dv-oid" href="#1u">1u</a>Admin dashboard — option B: matchday control room</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside">
+  <div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div>
+  <div class="ai on"><span class="ic">▦</span>Dashboard</div><div class="ai"><span class="ic">🏆</span>Competitions</div><div class="ai"><span class="ic">👥</span>Teams</div><div class="ai"><span class="ic">📅</span>Fixtures</div><div class="ai"><span class="ic">📊</span>Standings</div><div class="ai"><span class="ic">🏁</span>Brackets</div><div class="ai" style="color:#FF7A93"><span class="ic">●</span>Live Games</div><div class="ai"><span class="ic">⚙</span>Settings</div>
+</div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Matchday · Sat 12 Sept</b><span class="grow"></span><span class="chip">Day 3 of 17</span><span class="tt" style="background:#E8611C;width:22px;height:22px;font-size:8px">TD</span></div>
+<div class="dz"></div>
+<div class="pad r" style="gap:10px;padding:12px 14px;background:#F7F5F1;align-items:flex-start">
+  <div class="col grow" style="gap:10px">
+    <div class="card" style="background:#161B26;border:none;color:#fff;padding:12px 14px">
+      <div class="r sb"><span class="r"><span class="badge bLive"><span class="dot"></span> LIVE NOW</span><b class="bc" style="font-size:13px">Thimphu Warriors 72 — 68 Paro Dragons</b></span><span class="r tiny" style="color:#F0B429"><b class="bc">Q4</b><span class="mono">03:42</span></span></div>
+      <div class="r" style="margin-top:9px;gap:7px"><span class="b" style="background:#E11D48;color:#fff">Open score panel</span><span class="b ghd sm">Match centre preview</span><span class="grow"></span><span class="tiny" style="color:#7A828F">Court 1 · started 16:04</span></div>
+    </div>
+    <div class="card" style="overflow:hidden"><div class="r sb" style="padding:6px 11px;background:#F1EFE9"><b class="tiny">NEXT UP TODAY</b><a class="tiny">Full schedule →</a></div>
+      <div class="r sb" style="padding:8px 11px;border-bottom:1px solid #EEECE6"><span class="r tiny"><span class="mono" style="width:36px">12:30</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#2E5EAA">PNB</span>Bulls v Tigers<span class="tt" style="width:17px;height:17px;font-size:6px;background:#C98A12">HAT</span><span class="chip" style="font-size:8px">Pool B</span></span><span class="r"><span class="b sm gh">Edit</span><span class="b sm dk">Go Live</span></span></div>
+      <div class="r sb" style="padding:8px 11px"><span class="r tiny"><span class="mono" style="width:36px">15:00</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#A2335C">TQN</span>Queens v Phoenix<span class="tt" style="width:17px;height:17px;font-size:6px;background:#D9652B">PPX</span><span class="chip" style="font-size:8px">Women</span></span><span class="r"><span class="b sm gh">Edit</span><span class="b sm dk">Go Live</span></span></div>
+    </div>
+    <div class="card pad r" style="gap:12px"><b class="h3" style="width:110px">Tournament<br>progress</b>
+      <div class="col grow" style="gap:6px">
+        <div class="r tiny" style="gap:8px"><span style="width:78px" class="mut">Men's pools</span><span class="bar grow"><i style="width:92%"></i></span><b class="mono">23/25</b></div>
+        <div class="r tiny" style="gap:8px"><span style="width:78px" class="mut">Women's RR</span><span class="bar grow"><i style="width:80%;background:#A2335C"></i></span><b class="mono">12/15</b></div>
+        <div class="r tiny" style="gap:8px"><span style="width:78px" class="mut">Playoffs</span><span class="bar grow"><i style="width:0%"></i></span><b class="mono">0/4</b></div>
+      </div></div>
+  </div>
+  <div class="col" style="width:200px;gap:8px">
+    <div class="kpi"><div class="l">Teams / Players</div><div class="v" style="font-size:15px">16 · 184</div></div>
+    <div class="kpi"><div class="l">Results awaiting entry</div><div class="v" style="color:#B3441A">2</div></div>
+    <div class="card pad col" style="gap:6px"><b class="tiny">QUICK ACTIONS</b><span class="b o sm" style="justify-content:center">Enter match result</span><span class="b gh sm" style="justify-content:center">Register team</span><span class="b gh sm" style="justify-content:center">Start pool draw</span></div>
+  </div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-grp">ADMIN — COMPETITIONS · TEAMS · PLAYERS</div>
+
+<div class="dv-opt" id="1v"><div class="dv-olabel"><a class="dv-oid" href="#1v">1v</a>Competition management + create form</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai on"><span class="ic">🏆</span>Competitions</div><div class="ai"><span class="ic">👥</span>Teams</div><div class="ai"><span class="ic">📅</span>Fixtures</div><div class="ai"><span class="ic">📊</span>Standings</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Competitions</b><span class="grow"></span><span class="b o sm">＋ Create Competition</span></div>
+<div class="dz"></div>
+<div class="pad r" style="gap:10px;padding:12px 14px;background:#F7F5F1;align-items:flex-start">
+  <div class="card grow" style="overflow:hidden"><table class="st" style="font-size:9px">
+    <tr><th style="padding:5px 4px">COMPETITION</th><th style="padding:5px 4px">CAT</th><th style="padding:5px 4px">FORMAT</th><th class="n" style="padding:5px 4px">TEAMS</th><th style="padding:5px 4px">STATUS</th><th style="padding:5px 4px"></th></tr>
+    <tr><td><b>National Championship</b> <span class="tiny mut">2026</span></td><td>Men</td><td>Pool + Playoffs</td><td class="n">10</td><td><span class="badge bLive" style="font-size:7px">LIVE</span></td><td><a class="tiny">Manage</a></td></tr>
+    <tr><td><b>Women's Championship</b> <span class="tiny mut">2026</span></td><td>Women</td><td>RR + Final</td><td class="n">6</td><td><span class="badge bLive" style="font-size:7px">LIVE</span></td><td><a class="tiny">Manage</a></td></tr>
+    <tr><td><b>Youth U-18</b> <span class="tiny mut">2026</span></td><td>Mixed</td><td>Knockout</td><td class="n">6/12</td><td><span class="badge bReg" style="font-size:7px">REG OPEN</span></td><td><a class="tiny">Manage</a></td></tr>
+    <tr><td><b>Regional Championship</b> <span class="tiny mut">2025</span></td><td>Men</td><td>Knockout</td><td class="n">8</td><td><span class="badge bDone" style="font-size:7px">DONE</span></td><td><a class="tiny">Archive</a></td></tr>
+  </table></div>
+  <div class="card" style="width:230px"><div class="r sb" style="padding:7px 11px;background:#161B26;color:#fff;border-radius:8px 8px 0 0"><b class="tiny bc" style="letter-spacing:.12em">CREATE COMPETITION</b><span style="color:#7A828F">✕</span></div>
+    <div class="pad col" style="gap:7px;padding:10px 11px">
+      <div class="col" style="gap:2px"><span class="lbl">Competition name</span><span class="fld">Interstate Championship</span></div>
+      <div class="r" style="gap:6px"><div class="col grow" style="gap:2px"><span class="lbl">Type</span><span class="sel" style="width:auto">Interstate</span></div><div class="col" style="gap:2px;width:70px"><span class="lbl">Season</span><span class="fld">2026</span></div></div>
+      <div class="col" style="gap:2px"><span class="lbl">Location</span><span class="fld">Changlimithang, Thimphu</span></div>
+      <div class="r" style="gap:6px"><div class="col grow" style="gap:2px"><span class="lbl">Start</span><span class="fld">04 Nov</span></div><div class="col grow" style="gap:2px"><span class="lbl">End</span><span class="fld">18 Nov</span></div></div>
+      <div class="col" style="gap:2px"><span class="lbl">Registration deadline</span><span class="fld">21 Oct 2026</span></div>
+      <div class="col" style="gap:2px"><span class="lbl">Gender category</span><div class="r" style="gap:5px"><span class="chip on">Men</span><span class="chip">Women</span><span class="chip">Mixed</span></div></div>
+      <div class="col" style="gap:2px"><span class="lbl">Tournament format</span><div class="r" style="gap:5px;flex-wrap:wrap"><span class="chip">Round Robin</span><span class="chip on">Pool + Playoffs</span><span class="chip">Knockout</span><span class="chip">Custom</span></div></div>
+      <div class="r" style="gap:6px"><div class="col grow" style="gap:2px"><span class="lbl">Pools</span><span class="sel" style="width:auto">2</span></div><div class="col grow" style="gap:2px"><span class="lbl">Teams</span><span class="sel" style="width:auto">8</span></div></div>
+      <span class="b o" style="justify-content:center;margin-top:2px">Create competition</span>
+    </div></div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1w"><div class="dv-olabel"><a class="dv-oid" href="#1w">1w</a>Team registration — 3-step flow (step 2)</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai"><span class="ic">👥</span>Teams</div><div class="ai on"><span class="ic">📝</span>Registration</div><div class="ai"><span class="ic">◲</span>Pools</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Register Team</b><span class="grow"></span><span class="tiny mut">Draft autosaved 12:41</span></div>
+<div class="dz"></div>
+<div class="pad col" style="gap:12px;padding:14px;background:#F7F5F1">
+  <div class="r" style="justify-content:center;gap:8px">
+    <span class="r" style="gap:5px"><span class="stp done">✓</span><b class="tiny">Team information</b></span><span class="stln"></span>
+    <span class="r" style="gap:5px"><span class="stp on">2</span><b class="tiny">Players</b></span><span class="stln"></span>
+    <span class="r" style="gap:5px"><span class="stp">3</span><span class="tiny mut">Review &amp; register</span></span>
+  </div>
+  <div class="r" style="gap:10px;align-items:flex-start">
+    <div class="card" style="width:240px"><div style="padding:7px 11px;background:#F1EFE9;border-radius:8px 8px 0 0"><b class="tiny">ADD PLAYER</b></div>
+      <div class="pad col" style="gap:7px;padding:10px 11px">
+        <div class="r" style="gap:8px"><span class="ph" style="width:42px;height:42px;border-radius:6px;font-size:9px">📷</span><div class="col grow" style="gap:2px"><span class="lbl">Player photo</span><span class="b gh sm">Upload photo</span></div></div>
+        <div class="col" style="gap:2px"><span class="lbl">Full name</span><span class="fld">Kinley Rabgay</span></div>
+        <div class="r" style="gap:6px"><div class="col" style="gap:2px;width:60px"><span class="lbl">Jersey #</span><span class="fld">9</span></div><div class="col grow" style="gap:2px"><span class="lbl">Position</span><span class="sel" style="width:auto">SG — Shooting Guard</span></div></div>
+        <div class="r" style="gap:6px"><div class="col grow" style="gap:2px"><span class="lbl">Date of birth</span><span class="fld">14 Mar 2001</span></div><div class="col" style="gap:2px;width:62px"><span class="lbl">Height</span><span class="fld">183 cm</span></div></div>
+        <div class="col" style="gap:2px"><span class="lbl">Notes (optional)</span><span class="fld" style="height:24px"></span></div>
+        <span class="b dk" style="justify-content:center">＋ Add player to roster</span>
+      </div></div>
+    <div class="card grow" style="overflow:hidden">
+      <div class="r sb" style="padding:7px 11px;background:#F1EFE9"><span class="r"><span class="tt" style="width:20px;height:20px;font-size:7px;background:#2C7DA0">GLS</span><b class="tiny">GELEPHU STORM — ROSTER (7)</b></span><span class="tiny mut">Min 8 · Max 15 players</span></div>
+      <table class="st">
+        <tr><th></th><th class="n">#</th><th>PLAYER</th><th>POS</th><th class="n">AGE</th><th class="n">HEIGHT</th><th></th></tr>
+        <tr><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">4</td><td><b>Dorji Tshewang</b></td><td>PG</td><td class="n">24</td><td class="n">176 cm</td><td><span class="tiny" style="color:#B3282D">Remove</span></td></tr>
+        <tr><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">7</td><td><b>Sangay Wangdi</b></td><td>SG</td><td class="n">22</td><td class="n">181 cm</td><td><span class="tiny" style="color:#B3282D">Remove</span></td></tr>
+        <tr><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">11</td><td><b>Tandin Norbu</b></td><td>SF</td><td class="n">26</td><td class="n">185 cm</td><td><span class="tiny" style="color:#B3282D">Remove</span></td></tr>
+        <tr><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">23</td><td><b>Phub Gyeltshen</b></td><td>PF</td><td class="n">25</td><td class="n">189 cm</td><td><span class="tiny" style="color:#B3282D">Remove</span></td></tr>
+        <tr><td colspan="7" style="text-align:center;color:#B3441A;background:#FDF3EC" class="tiny">⚠ Add at least 1 more player to continue (8 minimum)</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="r sb"><span class="b gh">← Back: Team info</span><span class="r" style="gap:8px"><span class="tiny mut">Step 2 of 3</span><span class="b o">Continue to review →</span></span></div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1x"><div class="dv-olabel"><a class="dv-oid" href="#1x">1x</a>Team management — admin team profile</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai on"><span class="ic">👥</span>Teams</div><div class="ai"><span class="ic">🧍</span>Players</div><div class="ai"><span class="ic">◲</span>Pools</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><span class="tiny mut">Teams /</span><b class="h3">Thimphu Warriors</b><span class="badge bReg" style="font-size:7px">REGISTERED</span><span class="grow"></span><span class="b gh sm">✎ Edit team</span><span class="b gh sm">Change pool</span><span class="b dngr sm">Deactivate</span></div>
+<div class="dz"></div>
+<div class="pad col" style="gap:10px;padding:12px 14px;background:#F7F5F1">
+  <div class="card pad r" style="gap:12px">
+    <span class="tt xl" style="background:#E8611C">THW</span>
+    <div class="col" style="gap:2px"><b class="h2">Thimphu Warriors</b><span class="tiny mut">National Championship 2026 · Men's Pool A · Thimphu Dzongkhag</span><span class="tiny mut">Coach: Ugyen Tshering · Manager: Deki Yangzom · +975 17 6X XX XX · warriors@team.bt</span></div>
+    <span class="grow"></span>
+    <div class="r" style="gap:8px"><div class="col" style="align-items:center"><span class="score" style="font-size:16px">12</span><span class="tiny mut">PLAYERS</span></div><div class="col" style="align-items:center"><span class="score" style="font-size:16px">4–1</span><span class="tiny mut">RECORD</span></div></div>
+  </div>
+  <div class="card" style="overflow:hidden">
+    <div class="r sb" style="padding:6px 11px;background:#F1EFE9"><b class="tiny">SQUAD (12)</b><span class="b o sm">＋ Add player</span></div>
+    <table class="st">
+      <tr><th>PHOTO</th><th class="n">#</th><th>PLAYER</th><th>POSITION</th><th class="n">AGE</th><th>STATUS</th><th>ACTION</th></tr>
+      <tr><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">7</td><td><b>Sonam Wangchuk</b> <span class="tiny" style="color:#E8611C">Captain</span></td><td>PG — Point Guard</td><td class="n">27</td><td><span class="badge bReg" style="font-size:6.5px">ACTIVE</span></td><td><span class="r tiny" style="gap:8px"><a>Edit</a><span style="color:#B3282D">Remove</span></span></td></tr>
+      <tr style="background:#FDF3EC"><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">11</td><td><b>Karma Tenzin</b> <span class="tiny mut">← row hover state</span></td><td>SG — Shooting Guard</td><td class="n">24</td><td><span class="badge bReg" style="font-size:6.5px">ACTIVE</span></td><td><span class="r tiny" style="gap:8px"><a>Edit</a><span style="color:#B3282D">Remove</span></span></td></tr>
+      <tr><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">23</td><td><b>Jigme Dorji</b></td><td>SF — Small Forward</td><td class="n">25</td><td><span class="badge bReg" style="font-size:6.5px">ACTIVE</span></td><td><span class="r tiny" style="gap:8px"><a>Edit</a><span style="color:#B3282D">Remove</span></span></td></tr>
+      <tr><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">34</td><td><b>Tashi Norbu</b></td><td>PF — Power Forward</td><td class="n">28</td><td><span class="badge bUp" style="font-size:6.5px">INJURED</span></td><td><span class="r tiny" style="gap:8px"><a>Edit</a><span style="color:#B3282D">Remove</span></span></td></tr>
+      <tr><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">15</td><td><b>Ugyen Dendup</b></td><td>C — Center</td><td class="n">29</td><td><span class="badge bReg" style="font-size:6.5px">ACTIVE</span></td><td><span class="r tiny" style="gap:8px"><a>Edit</a><span style="color:#B3282D">Remove</span></span></td></tr>
+    </table>
+  </div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1y"><div class="dv-olabel"><a class="dv-oid" href="#1y">1y</a>Player management — search &amp; edit</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai"><span class="ic">👥</span>Teams</div><div class="ai on"><span class="ic">🧍</span>Players</div><div class="ai"><span class="ic">◲</span>Pools</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Players</b><span class="grow"></span><span class="fld" style="width:150px">🔍 "wangchuk"</span><span class="b o sm">＋ Add player</span></div>
+<div class="dz"></div>
+<div class="pad r" style="gap:10px;padding:12px 14px;background:#F7F5F1;align-items:flex-start">
+  <div class="col grow" style="gap:8px">
+    <div class="r" style="gap:6px"><span class="chip on">All (184)</span><span class="chip">Men</span><span class="chip">Women</span><span class="sel">Team: All</span><span class="sel">Position: All</span></div>
+    <div class="card grow" style="overflow:hidden"><table class="st">
+      <tr><th></th><th class="n">#</th><th>PLAYER</th><th>TEAM</th><th>POS</th><th class="n">AGE</th><th class="n">HT</th><th>STATUS</th><th></th></tr>
+      <tr style="background:#FDF3EC"><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">7</td><td><b>Sonam <mark style="background:#F0B429">Wangchuk</mark></b></td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#E8611C">THW</span>Warriors</span></td><td>PG</td><td class="n">27</td><td class="n">178</td><td><span class="badge bReg" style="font-size:6.5px">ACTIVE</span></td><td><a class="tiny">Edit</a></td></tr>
+      <tr><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">12</td><td><b>Tshering <mark style="background:#F0B429">Wangchuk</mark></b></td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#C98A12">HAT</span>Tigers</span></td><td>C</td><td class="n">30</td><td class="n">192</td><td><span class="badge bReg" style="font-size:6.5px">ACTIVE</span></td><td><a class="tiny">Edit</a></td></tr>
+      <tr><td><span class="ph" style="width:18px;height:18px;border-radius:50%;font-size:7px">👤</span></td><td class="n">3</td><td><b>Dema <mark style="background:#F0B429">Wangchuk</mark></b></td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#A2335C">TQN</span>Queens</span></td><td>SG</td><td class="n">23</td><td class="n">169</td><td><span class="badge bReg" style="font-size:6.5px">ACTIVE</span></td><td><a class="tiny">Edit</a></td></tr>
+    </table></div>
+  </div>
+  <div class="card" style="width:230px"><div class="r sb" style="padding:7px 11px;background:#161B26;color:#fff;border-radius:8px 8px 0 0"><b class="tiny bc" style="letter-spacing:.12em">EDIT PLAYER</b><span style="color:#7A828F">✕</span></div>
+    <div class="pad col" style="gap:7px;padding:10px 11px">
+      <div class="r" style="gap:8px"><span class="ph" style="width:38px;height:38px;border-radius:6px;font-size:8px">👤</span><div class="col"><b class="tiny">Sonam Wangchuk</b><span class="tiny mut">Thimphu Warriors</span></div></div>
+      <div class="r" style="gap:6px"><div class="col" style="gap:2px;width:56px"><span class="lbl">Jersey #</span><span class="fld" style="color:#1B2129">7</span></div><div class="col grow" style="gap:2px"><span class="lbl">Position</span><span class="sel" style="width:auto">PG — Point Guard</span></div></div>
+      <div class="col" style="gap:2px"><span class="lbl">Status</span><div class="r" style="gap:5px"><span class="chip on">Active</span><span class="chip">Injured</span><span class="chip">Suspended</span></div></div>
+      <div class="r" style="gap:6px;margin-top:2px"><span class="b o grow" style="justify-content:center">Save changes</span><span class="b gh">Cancel</span></div>
+    </div></div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-grp">ADMIN — POOLS &amp; LIVE DRAW (2 OPTIONS + PRESENTATION)</div>
+
+<div class="dv-opt" id="1z"><div class="dv-olabel"><a class="dv-oid" href="#1z">1z</a>Pool management</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai"><span class="ic">👥</span>Teams</div><div class="ai on"><span class="ic">◲</span>Pools</div><div class="ai"><span class="ic">🎡</span>Fixture Draw</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Pools — Men's National Championship</b><span class="badge bDone" style="font-size:7px">POOLS CONFIRMED</span><span class="grow"></span><span class="b gh sm">🎡 Re-run draw</span></div>
+<div class="dz"></div>
+<div class="pad r" style="gap:10px;padding:12px 14px;background:#F7F5F1;align-items:flex-start">
+  <div class="card grow" style="overflow:hidden"><div class="r sb" style="padding:6px 11px;background:#161B26;color:#F0B429"><b class="tiny bc" style="letter-spacing:.15em">MEN'S POOL A · 5 TEAMS</b><span class="tiny" style="color:#7A828F">Drawn 02 Sept, 19:12</span></div>
+    <div class="pad col" style="gap:6px">
+      <div class="r sb"><span class="r"><span class="tt" style="background:#E8611C">THW</span><b>Thimphu Warriors</b></span><span class="tiny mut">Spin 1</span></div>
+      <div class="r sb"><span class="r"><span class="tt" style="background:#2E5EAA">PNB</span><b>Punakha Bulls</b></span><span class="tiny mut">Spin 3</span></div>
+      <div class="r sb"><span class="r"><span class="tt" style="background:#3E7A5A">WDE</span><b>Wangdue Eagles</b></span><span class="tiny mut">Spin 5</span></div>
+      <div class="r sb"><span class="r"><span class="tt" style="background:#444B57">TRT</span><b>Trongsa Titans</b></span><span class="tiny mut">Spin 7</span></div>
+      <div class="r sb"><span class="r"><span class="tt" style="background:#2C7DA0">GLS</span><b>Gelephu Storm</b></span><span class="tiny mut">Spin 9</span></div>
+    </div></div>
+  <div class="card grow" style="overflow:hidden"><div class="r sb" style="padding:6px 11px;background:#161B26;color:#F0B429"><b class="tiny bc" style="letter-spacing:.15em">MEN'S POOL B · 5 TEAMS</b><span class="tiny" style="color:#7A828F">Drawn 02 Sept, 19:12</span></div>
+    <div class="pad col" style="gap:6px">
+      <div class="r sb"><span class="r"><span class="tt" style="background:#7A1F2B">PDR</span><b>Paro Dragons</b></span><span class="tiny mut">Spin 2</span></div>
+      <div class="r sb"><span class="r"><span class="tt" style="background:#C98A12">HAT</span><b>Haa Tigers</b></span><span class="tiny mut">Spin 4</span></div>
+      <div class="r sb"><span class="r"><span class="tt" style="background:#5B4A9E">BMF</span><b>Bumthang Falcons</b></span><span class="tiny mut">Spin 6</span></div>
+      <div class="r sb"><span class="r"><span class="tt" style="background:#C1462F">MGC</span><b>Mongar Chargers</b></span><span class="tiny mut">Spin 8</span></div>
+      <div class="r sb"><span class="r"><span class="tt" style="background:#8A5A44">SMS</span><b>Samtse Stallions</b></span><span class="tiny mut">Spin 10</span></div>
+    </div></div>
+  <div class="col" style="width:200px;gap:8px">
+    <div class="card pad" style="background:#EDFDF2;border-color:#BBE4C8"><span class="tiny" style="color:#276438"><b>✓ Pools official.</b> Fixtures were generated on 03 Sept. Public site is up to date.</span></div>
+    <div class="card pad col" style="gap:6px;border-style:dashed;text-align:center"><span class="tiny mut">Women's Championship uses a single round robin — no pool draw needed.</span></div>
+  </div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1aa"><div class="dv-olabel"><a class="dv-oid" href="#1aa">1aa</a>Pool draw setup</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai"><span class="ic">◲</span>Pools</div><div class="ai on"><span class="ic">🎡</span>Fixture Draw</div><div class="ai"><span class="ic">📅</span>Fixtures</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Live Pool Draw — Setup</b></div>
+<div class="dz"></div>
+<div class="pad r" style="gap:10px;padding:12px 14px;background:#F7F5F1;align-items:flex-start">
+  <div class="card" style="width:250px"><div style="padding:7px 11px;background:#F1EFE9;border-radius:8px 8px 0 0"><b class="tiny">DRAW SETTINGS</b></div>
+    <div class="pad col" style="gap:8px;padding:10px 11px">
+      <div class="col" style="gap:2px"><span class="lbl">Competition</span><span class="sel" style="width:auto">National Championship 2026</span></div>
+      <div class="col" style="gap:2px"><span class="lbl">Gender / Division</span><div class="r" style="gap:5px"><span class="chip on">Men's Division</span><span class="chip">Women's</span></div></div>
+      <div class="col" style="gap:2px"><span class="lbl">Pools to fill</span><div class="r" style="gap:5px"><span class="chip on">Pool A + Pool B, alternating</span></div></div>
+      <div class="col" style="gap:2px"><span class="lbl">Selection</span><div class="card pad tiny" style="padding:7px 9px;background:#F7F5F1">🔒 Fully random — the operator cannot influence which team is selected. Each spin uses a cryptographic RNG and is logged.</div></div>
+      <span class="b o lg" style="justify-content:center">▶ START LIVE DRAW</span>
+      <span class="b gh sm" style="justify-content:center">Open presentation display ↗</span>
+    </div></div>
+  <div class="card grow" style="overflow:hidden"><div class="r sb" style="padding:6px 11px;background:#F1EFE9"><b class="tiny">ELIGIBLE TEAMS — 10 SELECTED</b><span class="tiny mut">Registered &amp; approved only</span></div>
+    <div class="pad" style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <span class="r tiny"><span class="chip on" style="font-size:8px">✓</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#E8611C">THW</span>Thimphu Warriors</span>
+      <span class="r tiny"><span class="chip on" style="font-size:8px">✓</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#7A1F2B">PDR</span>Paro Dragons</span>
+      <span class="r tiny"><span class="chip on" style="font-size:8px">✓</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#2E5EAA">PNB</span>Punakha Bulls</span>
+      <span class="r tiny"><span class="chip on" style="font-size:8px">✓</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#C98A12">HAT</span>Haa Tigers</span>
+      <span class="r tiny"><span class="chip on" style="font-size:8px">✓</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#3E7A5A">WDE</span>Wangdue Eagles</span>
+      <span class="r tiny"><span class="chip on" style="font-size:8px">✓</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#5B4A9E">BMF</span>Bumthang Falcons</span>
+      <span class="r tiny"><span class="chip on" style="font-size:8px">✓</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#444B57">TRT</span>Trongsa Titans</span>
+      <span class="r tiny"><span class="chip on" style="font-size:8px">✓</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#C1462F">MGC</span>Mongar Chargers</span>
+      <span class="r tiny"><span class="chip on" style="font-size:8px">✓</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#2C7DA0">GLS</span>Gelephu Storm</span>
+      <span class="r tiny"><span class="chip on" style="font-size:8px">✓</span><span class="tt" style="width:17px;height:17px;font-size:6px;background:#8A5A44">SMS</span>Samtse Stallions</span>
+    </div>
+    <div class="r" style="padding:8px 11px;border-top:1px solid #EEECE6"><span class="tiny mut">Draw order: Spin 1 → Pool A · Spin 2 → Pool B · alternating until all 10 teams are placed (5 + 5).</span></div>
+  </div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1ab"><div class="dv-olabel"><a class="dv-oid" href="#1ab">1ab</a>Live spin-the-wheel draw — option A: full control room</div><div class="dv-card"><div class="scr" style="background:#161B26;color:#fff">
+<div class="flags"></div>
+<div class="r sb" style="padding:8px 16px;border-bottom:1px solid rgba(255,255,255,.1)"><span class="r"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="font-size:12px;letter-spacing:.08em">LIVE POOL DRAW — MEN'S DIVISION</b></span><span class="r" style="gap:8px"><span class="tiny" style="color:#7A828F">Presentation display: <b style="color:#4ADE80">● Connected</b></span><span class="b ghd sm">Exit draw</span></span></div>
+<div class="pad r" style="gap:16px;padding:16px;align-items:center">
+  <div class="col" style="align-items:center;gap:10px">
+    <div class="wheel" style="width:190px;height:190px;background:conic-gradient(#E8611C 0 36deg,#7A1F2B 36deg 72deg,#2E5EAA 72deg 108deg,#C98A12 108deg 144deg,#3E7A5A 144deg 180deg,#5B4A9E 180deg 216deg,#444B57 216deg 252deg,#C1462F 252deg 288deg,#2C7DA0 288deg 324deg,#8A5A44 324deg)">
+      <span class="ptr"></span><span class="hub">SPIN 6</span>
+      <span style="position:absolute;top:14px;left:50%;transform:translateX(-50%);font:700 6.5px Barlow;color:#fff">THW</span>
+      <span style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font:700 6.5px Barlow;color:#fff">BMF</span>
+      <span style="position:absolute;left:12px;top:50%;font:700 6.5px Barlow;color:#fff">GLS</span>
+      <span style="position:absolute;right:12px;top:50%;font:700 6.5px Barlow;color:#fff">PNB</span>
+    </div>
+    <span class="b o lg">🎡 SPIN</span>
+    <span class="tiny" style="color:#7A828F">RNG sealed · spin log #6 of 10</span>
+  </div>
+  <div class="col grow" style="align-items:center;gap:8px;text-align:center">
+    <span class="k" style="color:#F0B429;letter-spacing:.3em">SELECTED</span>
+    <span class="tt xl" style="background:#5B4A9E;width:58px;height:58px;font-size:17px;box-shadow:0 0 30px rgba(91,74,158,.6)">BMF</span>
+    <b class="h1" style="font-size:22px;color:#fff">BUMTHANG FALCONS</b>
+    <div style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(90deg,#F0B429,#E8611C);color:#161B26;border-radius:999px;padding:4px 16px;font:800 11px 'Barlow Condensed';letter-spacing:.14em">→ ASSIGNED TO POOL B</div>
+    <div class="col" style="gap:4px;margin-top:6px;width:170px">
+      <div class="r sb tiny" style="color:#7A828F"><span>Draw progress</span><b style="color:#fff">6 / 10 teams</b></div>
+      <span class="bar" style="background:#2A3244"><i style="width:60%;background:linear-gradient(90deg,#E8611C,#F0B429)"></i></span>
+    </div>
+    <span class="b dk" style="border:1px solid rgba(255,255,255,.25)">NEXT SPIN →</span>
+  </div>
+  <div class="col" style="width:210px;gap:8px">
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;overflow:hidden">
+      <div style="padding:5px 10px;background:rgba(240,180,41,.12)"><b class="tiny bc" style="color:#F0B429;letter-spacing:.15em">POOL A · 3/5</b></div>
+      <div class="pad col" style="gap:5px;padding:8px 10px">
+        <span class="r tiny"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#E8611C">THW</span>Thimphu Warriors</span>
+        <span class="r tiny"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#2E5EAA">PNB</span>Punakha Bulls</span>
+        <span class="r tiny"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#3E7A5A">WDE</span>Wangdue Eagles</span>
+        <span class="tiny" style="color:#5B6472">— open slot —</span>
+      </div></div>
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;overflow:hidden">
+      <div style="padding:5px 10px;background:rgba(240,180,41,.12)"><b class="tiny bc" style="color:#F0B429;letter-spacing:.15em">POOL B · 3/5</b></div>
+      <div class="pad col" style="gap:5px;padding:8px 10px">
+        <span class="r tiny"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#7A1F2B">PDR</span>Paro Dragons</span>
+        <span class="r tiny"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#C98A12">HAT</span>Haa Tigers</span>
+        <span class="r tiny" style="background:rgba(240,180,41,.15);border-radius:4px;padding:1px 3px"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#5B4A9E">BMF</span>Bumthang Falcons ← just added</span>
+        <span class="tiny" style="color:#5B6472">— open slot —</span>
+      </div></div>
+  </div>
+</div>
+<div class="r sb" style="padding:8px 16px;border-top:1px solid rgba(255,255,255,.1)"><span class="tiny" style="color:#7A828F">Remaining on wheel: TRT · MGC · GLS · SMS</span><span class="b dngr sm" style="background:transparent">Pause draw</span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1ac"><div class="dv-olabel"><a class="dv-oid" href="#1ac">1ac</a>Live draw — option B: operator console + preview, draw complete</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="col" style="width:250px;background:#fff;border-right:1px solid #E3E1DA;padding:12px;gap:9px">
+  <b class="h3">Draw console</b>
+  <div class="card pad" style="background:#EDFDF2;border-color:#BBE4C8;text-align:center"><b class="tiny" style="color:#276438">✓ DRAW COMPLETE — 10 / 10 assigned</b></div>
+  <div class="col" style="gap:5px">
+    <div class="r sb tiny"><span class="mut">Spin log</span><a>Export ↓</a></div>
+    <div class="card" style="max-height:104px;overflow:hidden">
+      <div class="r sb tiny" style="padding:4px 8px;border-bottom:1px solid #EEECE6"><span>Spin 10 · SMS</span><b>→ Pool B</b></div>
+      <div class="r sb tiny" style="padding:4px 8px;border-bottom:1px solid #EEECE6"><span>Spin 9 · GLS</span><b>→ Pool A</b></div>
+      <div class="r sb tiny" style="padding:4px 8px;border-bottom:1px solid #EEECE6"><span>Spin 8 · MGC</span><b>→ Pool B</b></div>
+      <div class="r sb tiny" style="padding:4px 8px"><span>Spin 7 · TRT</span><b>→ Pool A</b></div>
+    </div>
+  </div>
+  <span class="b o lg" style="justify-content:center">✓ CONFIRM POOLS</span>
+  <span class="tiny mut" style="text-align:center">Confirming makes pools official, enables fixture generation and publishes to the public site.</span>
+  <span class="b dngr sm" style="justify-content:center">Discard &amp; redraw</span>
+</div>
+<div class="grow" style="background:#161B26;color:#fff;padding:14px;display:flex;flex-direction:column;gap:10px">
+  <div class="r sb"><span class="k" style="color:#F0B429">PRESENTATION PREVIEW — WHAT THE HALL SEES</span><span class="tiny" style="color:#4ADE80">● Mirrored to big screen</span></div>
+  <div class="r" style="gap:12px;align-items:center;justify-content:center;flex:1">
+    <div class="wheel" style="width:110px;height:110px;opacity:.5;background:conic-gradient(#E8611C 0 36deg,#7A1F2B 36deg 72deg,#2E5EAA 72deg 108deg,#C98A12 108deg 144deg,#3E7A5A 144deg 180deg,#5B4A9E 180deg 216deg,#444B57 216deg 252deg,#C1462F 252deg 288deg,#2C7DA0 288deg 324deg,#8A5A44 324deg)"><span class="hub" style="font-size:7px">DONE</span></div>
+    <div class="col" style="align-items:center;gap:6px">
+      <div style="font-size:20px">🎉</div>
+      <b class="h1" style="font-size:20px;color:#fff">DRAW COMPLETE</b>
+      <span class="tiny" style="color:#B9C0CD">Both pools are full — awaiting official confirmation</span>
+    </div>
+    <div class="r" style="gap:8px">
+      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(240,180,41,.4);border-radius:8px;padding:8px 10px" class="col"><b class="tiny bc" style="color:#F0B429;letter-spacing:.15em">POOL A</b><span class="tiny">Warriors · Bulls · Eagles · Titans · Storm</span></div>
+      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(240,180,41,.4);border-radius:8px;padding:8px 10px" class="col"><b class="tiny bc" style="color:#F0B429;letter-spacing:.15em">POOL B</b><span class="tiny">Dragons · Tigers · Falcons · Chargers · Stallions</span></div>
+    </div>
+  </div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1ad"><div class="dv-olabel"><a class="dv-oid" href="#1ad">1ad</a>Public draw presentation mode — big screen, no controls</div><div class="dv-card"><div class="scr" style="background:radial-gradient(ellipse at 50% 120%,#2a3550,#161B26 65%);color:#fff;height:430px;display:flex;flex-direction:column;overflow:hidden;position:relative">
+<div class="flags" style="height:4px"></div>
+<div class="arc" style="width:560px;height:560px;left:-200px;bottom:-320px"></div>
+<div class="arc" style="width:400px;height:400px;right:-160px;top:-220px"></div>
+<div class="r" style="justify-content:center;gap:10px;padding:16px 0 4px"><span class="mark" style="width:30px;height:30px;font-size:10px">BB</span><div class="col" style="gap:0"><b class="bc" style="font-size:15px;letter-spacing:.1em">BHUTAN NATIONAL BASKETBALL CHAMPIONSHIP 2026</b><span class="k" style="color:#F0B429;text-align:center;font-size:8.5px;letter-spacing:.34em">OFFICIAL POOL DRAW · MEN'S DIVISION</span></div></div>
+<div class="r grow" style="padding:8px 28px;gap:24px;align-items:center;position:relative">
+  <div class="wheel" style="width:220px;height:220px;background:conic-gradient(#E8611C 0 36deg,#7A1F2B 36deg 72deg,#2E5EAA 72deg 108deg,#C98A12 108deg 144deg,#3E7A5A 144deg 180deg,#5B4A9E 180deg 216deg,#444B57 216deg 252deg,#C1462F 252deg 288deg,#2C7DA0 288deg 324deg,#8A5A44 324deg);box-shadow:0 0 60px rgba(240,180,41,.3), inset 0 0 0 8px #F0B429">
+    <span class="ptr" style="border-left-width:11px;border-right-width:11px;border-top-width:17px"></span><span class="hub" style="font-size:12px">SPIN 6</span>
+  </div>
+  <div class="col grow" style="align-items:center;gap:9px;text-align:center">
+    <span class="k" style="color:#F0B429;letter-spacing:.4em;font-size:11px">SELECTED!</span>
+    <span class="tt xl" style="background:#5B4A9E;width:76px;height:76px;font-size:22px;box-shadow:0 0 44px rgba(91,74,158,.7)">BMF</span>
+    <b class="h1" style="font-size:30px;color:#fff">BUMTHANG FALCONS</b>
+    <div style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#F0B429,#E8611C);color:#161B26;border-radius:999px;padding:6px 24px;font:800 15px 'Barlow Condensed';letter-spacing:.16em;box-shadow:0 6px 24px rgba(240,180,41,.45)">POOL B</div>
+  </div>
+  <div class="col" style="width:190px;gap:10px">
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(240,180,41,.35);border-radius:10px;overflow:hidden">
+      <div style="padding:6px 11px;background:rgba(240,180,41,.15)"><b class="bc" style="color:#F0B429;letter-spacing:.2em;font-size:10px">POOL A</b></div>
+      <div class="pad col" style="gap:6px;padding:9px 11px;font-size:10px">
+        <span class="r"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#E8611C">THW</span>Thimphu Warriors</span>
+        <span class="r"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#2E5EAA">PNB</span>Punakha Bulls</span>
+        <span class="r"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#3E7A5A">WDE</span>Wangdue Eagles</span>
+      </div></div>
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(240,180,41,.35);border-radius:10px;overflow:hidden">
+      <div style="padding:6px 11px;background:rgba(240,180,41,.15)"><b class="bc" style="color:#F0B429;letter-spacing:.2em;font-size:10px">POOL B</b></div>
+      <div class="pad col" style="gap:6px;padding:9px 11px;font-size:10px">
+        <span class="r"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#7A1F2B">PDR</span>Paro Dragons</span>
+        <span class="r"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#C98A12">HAT</span>Haa Tigers</span>
+        <span class="r" style="background:rgba(240,180,41,.2);border-radius:5px;padding:2px 4px"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#5B4A9E">BMF</span><b>Bumthang Falcons</b></span>
+      </div></div>
+  </div>
+</div>
+<div class="r" style="justify-content:center;gap:12px;padding:0 0 16px;position:relative">
+  <span class="bar" style="width:220px;background:#2A3244"><i style="width:60%;background:linear-gradient(90deg,#E8611C,#F0B429)"></i></span>
+  <b class="bc" style="color:#F0B429;font-size:12px;letter-spacing:.2em">6 / 10 TEAMS ASSIGNED</b>
+</div>
+</div></div></div>
+
+<div class="dv-grp">ADMIN — FIXTURES · LIVE SCORING · STANDINGS · BRACKETS · RESULTS</div>
+
+<div class="dv-opt" id="1ae"><div class="dv-olabel"><a class="dv-oid" href="#1ae">1ae</a>Fixture generator</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai"><span class="ic">◲</span>Pools</div><div class="ai on"><span class="ic">📅</span>Fixtures</div><div class="ai"><span class="ic">🏁</span>Brackets</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Fixture Generator — Men's National Championship</b></div>
+<div class="dz"></div>
+<div class="pad r" style="gap:10px;padding:12px 14px;background:#F7F5F1;align-items:flex-start">
+  <div class="card" style="width:220px"><div style="padding:7px 11px;background:#F1EFE9;border-radius:8px 8px 0 0"><b class="tiny">GENERATION PLAN</b></div>
+    <div class="pad col" style="gap:7px;padding:10px 11px">
+      <div class="r sb tiny"><span class="mut">Format</span><b>Pool + Playoffs</b></div>
+      <div class="r sb tiny"><span class="mut">Pool A round robin</span><b class="mono">10 games</b></div>
+      <div class="r sb tiny"><span class="mut">Pool B round robin</span><b class="mono">10 games</b></div>
+      <div class="r sb tiny"><span class="mut">Quarter finals</span><b class="mono">2 reserved</b></div>
+      <div class="r sb tiny"><span class="mut">Semi finals</span><b class="mono">2 reserved</b></div>
+      <div class="r sb tiny"><span class="mut">Final</span><b class="mono">1 reserved</b></div>
+      <div style="border-top:1px solid #EEECE6;padding-top:7px" class="col">
+        <div class="col" style="gap:2px"><span class="lbl">Window</span><span class="fld">10 – 26 Sept · Sat/Sun/Thu</span></div>
+        <div class="col" style="gap:2px;margin-top:5px"><span class="lbl">Daily slots</span><span class="fld">10:00 · 12:30 · 15:00 · 17:30</span></div>
+        <div class="col" style="gap:2px;margin-top:5px"><span class="lbl">Venue</span><span class="sel" style="width:auto">Changlimithang Court 1</span></div>
+      </div>
+      <span class="b o" style="justify-content:center">⚡ GENERATE FIXTURES</span>
+    </div></div>
+  <div class="card grow" style="overflow:hidden"><div class="r sb" style="padding:6px 11px;background:#F1EFE9"><b class="tiny">PREVIEW — 25 FIXTURES</b><span class="tiny mut">Drag to reschedule · progression locked</span></div>
+    <table class="st" style="font-size:9px">
+      <tr><th style="padding:5px 4px">RD</th><th style="padding:5px 4px">DATE · TIME</th><th style="padding:5px 4px">MATCH</th><th style="padding:5px 4px">POOL</th><th style="padding:5px 4px"></th></tr>
+      <tr><td style="padding:3px 4px">R1</td><td class="n" style="padding:3px 4px">Sat 10 · 10:00</td><td style="padding:3px 4px"><b>Warriors v Dragons</b></td><td style="padding:3px 4px">A</td><td style="padding:3px 4px"><a class="tiny">Adjust</a></td></tr>
+      <tr><td style="padding:3px 4px">R1</td><td class="n" style="padding:3px 4px">Sat 10 · 12:30</td><td style="padding:3px 4px"><b>Bulls v Titans</b></td><td style="padding:3px 4px">A</td><td style="padding:3px 4px"><a class="tiny">Adjust</a></td></tr>
+      <tr><td style="padding:3px 4px">R1</td><td class="n" style="padding:3px 4px">Sat 10 · 15:00</td><td style="padding:3px 4px"><b>Tigers v Stallions</b></td><td style="padding:3px 4px">B</td><td style="padding:3px 4px"><a class="tiny">Adjust</a></td></tr>
+      <tr><td colspan="5" class="tiny" style="text-align:center;color:#8A909C;padding:3px 4px">… 19 more pool games …</td></tr>
+      <tr style="background:#FDF3EC"><td style="padding:3px 4px"><b>QF1</b></td><td class="n" style="padding:3px 4px">Sat 20 · 10:00</td><td style="padding:3px 4px"><b>A #2 v B #3</b> <span class="tiny mut">🔒 auto</span></td><td style="padding:3px 4px">—</td><td style="padding:3px 4px"><span class="tiny mut">Locked</span></td></tr>
+      <tr style="background:#FDF3EC"><td style="padding:3px 4px"><b>SF1</b></td><td class="n" style="padding:3px 4px">Wed 23 · 17:00</td><td style="padding:3px 4px"><b>A #1 v QF2 winner</b> <span class="tiny mut">🔒</span></td><td style="padding:3px 4px">—</td><td style="padding:3px 4px"><span class="tiny mut">Locked</span></td></tr>
+      <tr style="background:#FDF3EC"><td style="padding:3px 4px"><b>F</b></td><td class="n" style="padding:3px 4px">Sat 26 · 18:00</td><td style="padding:3px 4px"><b>SF1 w v SF2 w</b> <span class="tiny mut">🔒</span></td><td style="padding:3px 4px">—</td><td style="padding:3px 4px"><span class="tiny mut">Locked</span></td></tr>
+    </table>
+    <div class="r sb" style="padding:8px 11px;border-top:1px solid #EEECE6"><span class="tiny mut">Date/time/venue editable — progression can't break.</span><span class="r" style="gap:7px"><span class="b gh sm">Regenerate</span><span class="b dk sm">Publish</span></span></div>
+  </div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1af"><div class="dv-olabel"><a class="dv-oid" href="#1af">1af</a>Fixture management</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai on"><span class="ic">📅</span>Fixtures</div><div class="ai"><span class="ic">🗂</span>Results</div><div class="ai"><span class="ic">📊</span>Standings</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Fixtures</b><span class="grow"></span><span class="fld" style="width:120px">🔍 Search…</span><span class="sel">Status: All</span><span class="sel">Pool: All</span><span class="b o sm">＋ Create fixture</span></div>
+<div class="dz"></div>
+<div style="padding:12px 14px;background:#F7F5F1">
+<div class="card" style="overflow:hidden"><table class="st">
+  <tr><th>DATE</th><th>TIME</th><th>COMPETITION</th><th>POOL</th><th>TEAM A</th><th>TEAM B</th><th>VENUE</th><th>STATUS</th><th>ACTION</th></tr>
+  <tr><td class="n">Sat 12</td><td class="n">10:00</td><td>National 2026</td><td>A</td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#E8611C">THW</span><b>Warriors</b></span></td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#7A1F2B">PDR</span><b>Dragons</b></span></td><td>Court 1</td><td><span class="badge bLive" style="font-size:6.5px"><span class="dot"></span> LIVE</span></td><td><span class="b sm" style="background:#E11D48;color:#fff">Score panel</span></td></tr>
+  <tr><td class="n">Sat 12</td><td class="n">12:30</td><td>National 2026</td><td>B</td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#2E5EAA">PNB</span><b>Bulls</b></span></td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#C98A12">HAT</span><b>Tigers</b></span></td><td>Court 1</td><td><span class="badge bUp" style="font-size:6.5px">UPCOMING</span></td><td><span class="r tiny" style="gap:6px"><a>Edit</a><a>Start</a><span class="mut">⋯</span></span></td></tr>
+  <tr><td class="n">Sat 12</td><td class="n">15:00</td><td>Women's 2026</td><td>—</td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#A2335C">TQN</span><b>Queens</b></span></td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#D9652B">PPX</span><b>Phoenix</b></span></td><td>Court 1</td><td><span class="badge bUp" style="font-size:6.5px">UPCOMING</span></td><td><span class="r tiny" style="gap:6px"><a>Edit</a><a>Start</a><span class="mut">⋯</span></span></td></tr>
+  <tr><td class="n">Thu 11</td><td class="n">17:00</td><td>National 2026</td><td>A</td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#E8611C">THW</span><b>Warriors</b> <b class="mono" style="color:#E8611C">82</b></span></td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#7A1F2B">PDR</span>Dragons <span class="mono mut">75</span></span></td><td>Court 1</td><td><span class="badge bFin" style="font-size:6.5px">FINAL</span></td><td><span class="r tiny" style="gap:6px"><a>View</a><a>Correct</a></span></td></tr>
+  <tr><td class="n">Sun 13</td><td class="n">10:00</td><td>National 2026</td><td>A</td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#3E7A5A">WDE</span><b>Eagles</b></span></td><td><span class="r" style="gap:4px"><span class="tt" style="width:15px;height:15px;font-size:5px;background:#2C7DA0">GLS</span><b>Storm</b></span></td><td>Court 1</td><td><span class="badge" style="background:#FEF3C7;color:#92400E;font-size:6.5px">POSTPONED</span></td><td><span class="r tiny" style="gap:6px"><a>Reschedule</a><span style="color:#B3282D">Cancel</span></span></td></tr>
+</table>
+<div class="r" style="padding:7px 11px;border-top:1px solid #EEECE6"><span class="tiny mut">Row actions: Edit · Start match · Enter result · Postpone · Cancel (with confirmation)</span></div>
+</div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1ag"><div class="dv-olabel"><a class="dv-oid" href="#1ag">1ag</a>Live score management</div><div class="dv-card"><div class="scr" style="background:#161B26;color:#fff">
+<div class="flags"></div>
+<div class="r sb" style="padding:8px 16px;border-bottom:1px solid rgba(255,255,255,.1)"><span class="r"><span class="badge bLive"><span class="dot"></span> LIVE</span><b class="bc" style="font-size:12px;letter-spacing:.06em">SCORE PANEL — MEN'S POOL A · ROUND 5</b></span><span class="tiny" style="color:#7A828F">Public site updates instantly</span></div>
+<div class="pad r" style="gap:14px;padding:16px;align-items:stretch">
+  <div class="col grow" style="align-items:center;gap:9px;background:rgba(232,97,28,.08);border:1px solid rgba(232,97,28,.35);border-radius:10px;padding:14px">
+    <span class="tt lg" style="background:#E8611C;width:40px;height:40px">THW</span><b class="h3" style="color:#fff">Thimphu Warriors</b>
+    <span class="score" style="font-size:44px;color:#F0B429">72</span>
+    <div class="r" style="gap:6px"><span class="b dk lg" style="border:1px solid rgba(255,255,255,.25);font-size:13px">+1</span><span class="b dk lg" style="border:1px solid rgba(255,255,255,.25);font-size:13px">+2</span><span class="b dk lg" style="border:1px solid rgba(255,255,255,.25);font-size:13px">+3</span><span class="b dk sm" style="border:1px solid rgba(255,255,255,.15);color:#7A828F">−1</span></div>
+    <div class="r tiny" style="gap:10px;color:#7A828F"><span>Team fouls <b class="mono" style="color:#fff">6</b> <a style="color:#F0B429">+</a></span><span>Timeouts <b class="mono" style="color:#fff">2/6</b> <a style="color:#F0B429">+</a></span></div>
+  </div>
+  <div class="col" style="width:190px;align-items:center;justify-content:center;gap:10px">
+    <div class="col" style="align-items:center;gap:4px"><span class="lbl" style="color:#7A828F">QUARTER</span>
+      <div class="r" style="gap:4px"><span class="chip" style="background:transparent;color:#7A828F;border-color:#39404C">Q1</span><span class="chip" style="background:transparent;color:#7A828F;border-color:#39404C">Q2</span><span class="chip" style="background:transparent;color:#7A828F;border-color:#39404C">Q3</span><span class="chip on" style="background:#E11D48;border-color:#E11D48;color:#fff">Q4</span><span class="chip" style="background:transparent;color:#7A828F;border-color:#39404C">OT</span></div></div>
+    <div class="col" style="align-items:center;gap:4px"><span class="lbl" style="color:#7A828F">GAME CLOCK</span>
+      <div style="background:#0E1119;border:1px solid #39404C;border-radius:8px;padding:6px 18px"><span class="mono" style="font-size:22px;color:#F0B429">03:42</span></div>
+      <div class="r" style="gap:5px"><span class="b dk sm" style="border:1px solid rgba(255,255,255,.25)">⏸ Pause</span><span class="b dk sm" style="border:1px solid rgba(255,255,255,.25)">Edit</span></div></div>
+    <span class="b lg" style="background:#E11D48;color:#fff;justify-content:center;width:100%">■ END MATCH</span>
+    <span class="tiny" style="color:#5B6472;text-align:center">Ending stores the result and auto-updates standings + bracket</span>
+  </div>
+  <div class="col grow" style="align-items:center;gap:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px">
+    <span class="tt lg" style="background:#7A1F2B;width:40px;height:40px">PDR</span><b class="h3" style="color:#fff">Paro Dragons</b>
+    <span class="score" style="font-size:44px">68</span>
+    <div class="r" style="gap:6px"><span class="b dk lg" style="border:1px solid rgba(255,255,255,.25);font-size:13px">+1</span><span class="b dk lg" style="border:1px solid rgba(255,255,255,.25);font-size:13px">+2</span><span class="b dk lg" style="border:1px solid rgba(255,255,255,.25);font-size:13px">+3</span><span class="b dk sm" style="border:1px solid rgba(255,255,255,.15);color:#7A828F">−1</span></div>
+    <div class="r tiny" style="gap:10px;color:#7A828F"><span>Team fouls <b class="mono" style="color:#fff">8</b> <a style="color:#F0B429">+</a></span><span>Timeouts <b class="mono" style="color:#fff">4/6</b> <a style="color:#F0B429">+</a></span></div>
+  </div>
+</div>
+<div class="r" style="padding:0 16px 12px;gap:8px"><span class="tiny" style="color:#7A828F">Quarter scores:</span><span class="mono tiny" style="color:#B9C0CD">Q1 20–18 · Q2 17–19 · Q3 21–15 · Q4 14–16</span><span class="grow"></span><span class="b ghd sm">Undo last action ↺</span></div>
+</div></div></div>
+
+<div class="dv-opt" id="1ah"><div class="dv-olabel"><a class="dv-oid" href="#1ah">1ah</a>Standings management + manual override</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai"><span class="ic">🗂</span>Results</div><div class="ai on"><span class="ic">📊</span>Standings</div><div class="ai"><span class="ic">🏁</span>Brackets</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Standings — Men's Pool A</b><span class="chip">Auto-calculated from results</span><span class="grow"></span><span class="b gh sm">Recalculate ↺</span></div>
+<div class="dz"></div>
+<div class="pad r" style="gap:10px;padding:12px 14px;background:#F7F5F1;align-items:flex-start">
+  <div class="card grow" style="overflow:hidden"><table class="st">
+    <tr><th class="n">POS</th><th>TEAM</th><th class="n">P</th><th class="n">W</th><th class="n">L</th><th class="n">PF</th><th class="n">PA</th><th class="n">PD</th><th class="n">PTS</th><th></th></tr>
+    <tr class="q"><td class="n">1</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#E8611C">THW</span><b>Warriors</b></span></td><td class="n">5</td><td class="n">4</td><td class="n">1</td><td class="n">410</td><td class="n">350</td><td class="n">+60</td><td class="n"><b>9</b></td><td><a class="tiny">Adjust</a></td></tr>
+    <tr class="q"><td class="n">2</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#2E5EAA">PNB</span><b>Bulls</b> <span class="badge" style="background:#FEF3C7;color:#92400E;font-size:6.5px">⚠ MANUAL EDIT</span></span></td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">388</td><td class="n">371</td><td class="n">+17</td><td class="n"><b>8</b></td><td><a class="tiny">History</a></td></tr>
+    <tr class="q"><td class="n">3</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#3E7A5A">WDE</span><b>Eagles</b></span></td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">362</td><td class="n">355</td><td class="n">+7</td><td class="n"><b>8</b></td><td><a class="tiny">Adjust</a></td></tr>
+    <tr><td class="n">4</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#444B57">TRT</span>Titans</span></td><td class="n">5</td><td class="n">2</td><td class="n">3</td><td class="n">351</td><td class="n">368</td><td class="n">−17</td><td class="n">7</td><td><a class="tiny">Adjust</a></td></tr>
+    <tr><td class="n">5</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#2C7DA0">GLS</span>Storm</span></td><td class="n">5</td><td class="n">1</td><td class="n">4</td><td class="n">330</td><td class="n">397</td><td class="n">−67</td><td class="n">6</td><td><a class="tiny">Adjust</a></td></tr>
+  </table>
+  <div class="r" style="padding:7px 11px;border-top:1px solid #EEECE6;background:#FEF9EE"><span class="tiny" style="color:#92400E">⚠ Manual adjustment on Punakha Bulls (−1 PT, forfeiture ruling) · by T. Dorji, 09 Sept · reason logged</span></div>
+  </div>
+  <div class="card" style="width:240px"><div class="r sb" style="padding:7px 11px;background:#161B26;color:#fff;border-radius:8px 8px 0 0"><b class="tiny bc" style="letter-spacing:.12em">MANUALLY ADJUST STANDING</b><span style="color:#7A828F">✕</span></div>
+    <div class="pad col" style="gap:7px;padding:10px 11px">
+      <div class="card pad tiny" style="padding:7px 9px;background:#FEF9EE;border-color:#F2DFAE;color:#92400E">Standings are auto-calculated. Use overrides only for official rulings — the change is marked publicly and logged.</div>
+      <div class="col" style="gap:2px"><span class="lbl">Team</span><span class="sel" style="width:auto">Punakha Bulls</span></div>
+      <div class="r" style="gap:6px"><div class="col grow" style="gap:2px"><span class="lbl">Field</span><span class="sel" style="width:auto">Competition points</span></div><div class="col" style="gap:2px;width:60px"><span class="lbl">Change</span><span class="fld" style="color:#1B2129">−1</span></div></div>
+      <div class="col" style="gap:2px"><span class="lbl">Reason (required)</span><span class="fld" style="height:26px;color:#1B2129">Forfeiture ruling — ineligible player, R3</span></div>
+      <div class="r" style="gap:6px"><span class="b o grow" style="justify-content:center">Apply override</span><span class="b gh">Cancel</span></div>
+    </div></div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1ai"><div class="dv-olabel"><a class="dv-oid" href="#1ai">1ai</a>Men's bracket management</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai"><span class="ic">📅</span>Fixtures</div><div class="ai"><span class="ic">📊</span>Standings</div><div class="ai on"><span class="ic">🏁</span>Brackets</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Bracket — Men's Playoffs</b><span class="chip">Auto-progression ON</span><span class="grow"></span><span class="b gh sm">Override progression…</span></div>
+<div class="dz"></div>
+<div class="pad r" style="gap:8px;padding:14px;background:#F7F5F1;align-items:center">
+  <div class="col" style="gap:12px">
+    <div class="tiny bc" style="font-weight:700;letter-spacing:.16em;color:#8A909C">QUARTER FINALS</div>
+    <div class="bm" style="width:170px"><div class="hd"><span>QF1</span><span class="badge bFin" style="font-size:7px">FINAL</span></div>
+      <div class="rw win"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#2E5EAA">PNB</span>Bulls<span class="sc">74</span></div>
+      <div class="rw lose"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#5B4A9E">BMF</span>Falcons<span class="sc">66</span></div>
+      <div class="hd" style="background:#fff;border-top:1px solid #F1EFE9"><a class="tiny">Correct result</a><a class="tiny">Match →</a></div></div>
+    <div class="bm" style="width:170px"><div class="hd"><span>QF2</span><span class="badge bUp" style="font-size:7px">SCHEDULED</span></div>
+      <div class="rw"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#C98A12">HAT</span>Tigers<span class="sc mut">–</span></div>
+      <div class="rw"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#3E7A5A">WDE</span>Eagles<span class="sc mut">–</span></div>
+      <div class="hd" style="background:#fff;border-top:1px solid #F1EFE9"><a class="tiny">Edit schedule</a><a class="tiny">Enter result</a></div></div>
+  </div>
+  <div class="conn" style="margin:40px 0"></div>
+  <div class="col" style="gap:12px">
+    <div class="tiny bc" style="font-weight:700;letter-spacing:.16em;color:#8A909C">SEMI FINALS</div>
+    <div class="bm" style="width:170px"><div class="hd"><span>SF1 · A1 v QF2 winner</span></div>
+      <div class="rw"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#E8611C">THW</span>Warriors<span class="sc mut">–</span></div>
+      <div class="rw mut"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#C3C9D2;color:#6B7280">?</span>Awaiting QF2<span class="sc">–</span></div>
+      <div class="hd" style="background:#fff;border-top:1px solid #F1EFE9"><a class="tiny">Schedule</a><span class="tiny mut">🔒 auto-fills</span></div></div>
+    <div class="bm" style="width:170px"><div class="hd"><span>SF2 · B1 v QF1 winner</span><span class="badge" style="background:#DCEBDD;color:#276438;font-size:6.5px">AUTO-FILLED</span></div>
+      <div class="rw"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#7A1F2B">PDR</span>Dragons<span class="sc mut">–</span></div>
+      <div class="rw"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#2E5EAA">PNB</span>Bulls ← advanced<span class="sc mut">–</span></div>
+      <div class="hd" style="background:#fff;border-top:1px solid #F1EFE9"><a class="tiny">Schedule</a><a class="tiny">Enter result</a></div></div>
+  </div>
+  <div class="conn2"></div>
+  <div class="col" style="gap:8px">
+    <div class="tiny bc" style="font-weight:700;letter-spacing:.16em;color:#8A909C">FINAL</div>
+    <div class="bm" style="width:170px;border:2px solid #F0B429"><div class="hd" style="background:#161B26;color:#F0B429"><span>FINAL · 26 SEPT</span></div>
+      <div class="rw mut"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#C3C9D2;color:#6B7280">?</span>Winner SF1<span class="sc">–</span></div>
+      <div class="rw mut"><span class="tt" style="width:18px;height:18px;font-size:6px;background:#C3C9D2;color:#6B7280">?</span>Winner SF2<span class="sc">–</span></div>
+      <div class="hd" style="background:#fff;border-top:1px solid #F1EFE9"><a class="tiny">Schedule</a></div></div>
+    <div class="card pad tiny" style="padding:7px 9px;background:#EDFDF2;border-color:#BBE4C8;color:#276438;width:170px">✓ Winners advance automatically when a result is entered. Manual moves require the override dialog + reason.</div>
+  </div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1aj"><div class="dv-olabel"><a class="dv-oid" href="#1aj">1aj</a>Women's tournament management</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai"><span class="ic">🏆</span>Competitions</div><div class="ai on"><span class="ic">📊</span>Standings</div><div class="ai"><span class="ic">📅</span>Fixtures</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Women's Championship — Round Robin + Final</b><span class="badge bLive" style="font-size:7px">LIVE</span></div>
+<div class="dz"></div>
+<div class="pad r" style="gap:10px;padding:12px 14px;background:#F7F5F1;align-items:flex-start">
+  <div class="card grow" style="overflow:hidden"><div class="r sb" style="padding:6px 11px;background:#F1EFE9"><b class="tiny">ROUND ROBIN — 12 OF 15 PLAYED</b><span class="bar" style="width:80px"><i style="width:80%;background:#A2335C"></i></span></div>
+    <table class="st">
+      <tr><th class="n">POS</th><th>TEAM</th><th class="n">P</th><th class="n">W</th><th class="n">L</th><th class="n">PD</th><th class="n">PTS</th><th></th></tr>
+      <tr class="q"><td class="n">1</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#A2335C">TQN</span><b>Queens</b> <span class="badge" style="background:#F0B429;color:#161B26;font-size:6.5px">FINALIST</span></span></td><td class="n">4</td><td class="n">4</td><td class="n">0</td><td class="n">+43</td><td class="n"><b>8</b></td><td><a class="tiny">Adjust</a></td></tr>
+      <tr class="q"><td class="n">2</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#D9652B">PPX</span><b>Phoenix</b> <span class="badge" style="background:#F0B429;color:#161B26;font-size:6.5px">FINALIST</span></span></td><td class="n">4</td><td class="n">3</td><td class="n">1</td><td class="n">+22</td><td class="n"><b>7</b></td><td><a class="tiny">Adjust</a></td></tr>
+      <tr><td class="n">3</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#4E7A9E">PPL</span>Pearls</span></td><td class="n">4</td><td class="n">2</td><td class="n">2</td><td class="n">+2</td><td class="n">6</td><td><a class="tiny">Adjust</a></td></tr>
+      <tr><td class="n">4</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#5E548E">WVK</span>Valkyries</span></td><td class="n">4</td><td class="n">2</td><td class="n">2</td><td class="n">−10</td><td class="n">6</td><td><a class="tiny">Adjust</a></td></tr>
+      <tr><td class="n">5</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#37423D">HRV</span>Ravens</span></td><td class="n">4</td><td class="n">1</td><td class="n">3</td><td class="n">−28</td><td class="n">5</td><td><a class="tiny">Adjust</a></td></tr>
+      <tr><td class="n">6</td><td><span class="r"><span class="tt" style="width:17px;height:17px;font-size:6px;background:#C98A12">GCM</span>Comets</span></td><td class="n">4</td><td class="n">0</td><td class="n">4</td><td class="n">−29</td><td class="n">4</td><td><a class="tiny">Adjust</a></td></tr>
+    </table></div>
+  <div class="col" style="width:240px;gap:8px">
+    <div class="card"><div style="padding:6px 11px;background:#161B26;color:#F0B429;border-radius:8px 8px 0 0"><b class="tiny bc" style="letter-spacing:.15em">THE FINAL — AUTO-SEEDED</b></div>
+      <div class="pad col" style="gap:7px;padding:10px 11px">
+        <div class="r sb"><span class="r"><span class="tt" style="width:19px;height:19px;font-size:6.5px;background:#A2335C">TQN</span><b class="tiny">Queens (1st)</b></span><span class="tiny mut">vs</span><span class="r"><b class="tiny">Phoenix (2nd)</b><span class="tt" style="width:19px;height:19px;font-size:6.5px;background:#D9652B">PPX</span></span></div>
+        <div class="r" style="gap:6px"><div class="col grow" style="gap:2px"><span class="lbl">Date</span><span class="fld">25 Sept</span></div><div class="col" style="gap:2px;width:56px"><span class="lbl">Time</span><span class="fld">17:00</span></div></div>
+        <div class="col" style="gap:2px"><span class="lbl">Venue</span><span class="sel" style="width:auto">Changlimithang Court 1</span></div>
+        <span class="b o sm" style="justify-content:center">Confirm final fixture</span>
+        <span class="tiny mut" style="text-align:center">Seeds lock automatically when the last round-robin game is entered</span>
+      </div></div>
+    <div class="card pad tiny" style="background:#F7F5F1"><b>Remaining:</b> PPL v HRV · WVK v GCM · TQN v GCM (14–15 Sept)</div>
+  </div>
+</div>
+</div>
+</div></div></div>
+
+<div class="dv-opt" id="1ak"><div class="dv-olabel"><a class="dv-oid" href="#1ak">1ak</a>Results management + result entry</div><div class="dv-card"><div class="scr r" style="align-items:stretch;gap:0">
+<div class="aside"><div class="r" style="gap:7px;padding:2px 9px 9px"><span class="mark" style="width:20px;height:20px;font-size:7.5px">BB</span><b class="bc" style="color:#fff;font-size:11px">BB ADMIN</b></div><div class="ai"><span class="ic">▦</span>Dashboard</div><div class="ai"><span class="ic">📅</span>Fixtures</div><div class="ai on"><span class="ic">🗂</span>Results</div><div class="ai"><span class="ic">📊</span>Standings</div><div class="ai"><span class="ic">⚙</span>Settings</div></div>
+<div class="col grow" style="gap:0">
+<div class="abar"><b class="h3">Results</b><span class="grow"></span><span class="fld" style="width:120px">🔍 Search…</span><span class="sel">Stage: All</span><span class="b o sm">✎ Enter result</span></div>
+<div class="dz"></div>
+<div class="pad r" style="gap:10px;padding:12px 14px;background:#F7F5F1;align-items:flex-start">
+  <div class="card grow" style="overflow:hidden"><table class="st">
+    <tr><th>DATE</th><th>MATCH</th><th class="n">SCORE</th><th>STAGE</th><th></th></tr>
+    <tr><td class="n">11 Sep</td><td><b>Warriors</b> v Dragons <span class="tiny mut">· auto</span></td><td class="n"><b>82–75</b></td><td>Pool A·R5</td><td><span class="r tiny" style="gap:6px"><a>View</a><a>Correct</a></span></td></tr>
+    <tr><td class="n">11 Sep</td><td><b>Tigers</b> v Falcons <span class="tiny mut">· auto</span></td><td class="n"><b>69–64</b></td><td>Pool B·R5</td><td><span class="r tiny" style="gap:6px"><a>View</a><a>Correct</a></span></td></tr>
+    <tr style="background:#FEF9EE"><td class="n">10 Sep</td><td><b>Bulls</b> v Titans <span class="badge" style="background:#FEF3C7;color:#92400E;font-size:6.5px">CORRECTED</span></td><td class="n"><b>81–77</b></td><td>Pool A·R4</td><td><span class="r tiny" style="gap:6px"><a>View</a><a>History</a></span></td></tr>
+    <tr><td class="n">10 Sep</td><td><b>Queens</b> v Pearls <span class="tiny mut">· sheet</span></td><td class="n"><b>58–51</b></td><td>Women·R3</td><td><span class="r tiny" style="gap:6px"><a>View</a><a>Correct</a></span></td></tr>
+  </table>
+  <div class="r" style="padding:7px 11px;border-top:1px solid #EEECE6"><span class="tiny mut">Results auto-update standings → qualification → bracket → public site.</span></div>
+  </div>
+  <div class="card" style="width:240px"><div class="r sb" style="padding:7px 11px;background:#161B26;color:#fff;border-radius:8px 8px 0 0"><b class="tiny bc" style="letter-spacing:.12em">ENTER MATCH RESULT</b><span style="color:#7A828F">✕</span></div>
+    <div class="pad col" style="gap:8px;padding:10px 11px">
+      <div class="col" style="gap:2px"><span class="lbl">Fixture</span><span class="sel" style="width:auto">Bulls v Tigers · Sat 12:30</span></div>
+      <div class="r" style="gap:8px;justify-content:center">
+        <div class="col" style="align-items:center;gap:3px"><span class="tt" style="background:#2E5EAA">PNB</span><span class="fld mono" style="width:44px;text-align:center;color:#1B2129;font-size:14px">78</span></div>
+        <b class="mut" style="margin-top:14px">—</b>
+        <div class="col" style="align-items:center;gap:3px"><span class="tt" style="background:#C98A12">HAT</span><span class="fld mono" style="width:44px;text-align:center;color:#1B2129;font-size:14px">83</span></div>
+      </div>
+      <div class="col" style="gap:2px"><span class="lbl">Quarter scores (optional)</span><span class="fld tiny">18-21 · 20-19 · 22-20 · 18-23</span></div>
+      <div class="card pad tiny" style="padding:7px 9px;background:#F7F5F1">On save: Tigers +1 W · Bulls +1 L · PF/PA updated · standings re-ranked</div>
+      <div class="r" style="gap:6px"><span class="b o grow" style="justify-content:center">Save result</span><span class="b gh">Cancel</span></div>
+    </div></div>
+</div>
+</div>
+</div></div></div>
+
+</div>
+<p class="dv-next">Try next: "retheme to my system's colors — here's the CSS" · "more like <a class="dv-oid" href="#1k">1k</a> for the public bracket" · "make <a class="dv-oid" href="#1a">1a</a> a full clickable prototype" · "riff on the live draw presentation <a class="dv-oid" href="#1ad">1ad</a>"</p>
+</section>
+</x-dc>
+</body>
+</html>
