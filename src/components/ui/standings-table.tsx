@@ -97,7 +97,14 @@ export function StandingsTable({
                 <td className="px-2 py-1.5">
                   <span className="flex items-center gap-2">
                     <TeamTile team={team} />
-                    <span className={qualified ? "font-bold" : ""}>{team.name}</span>
+                    <span className={`flex items-center gap-1.5 ${qualified ? "font-bold" : ""}`}>
+                      {team.name}
+                      {row.note ? (
+                        <span className="rounded-[3px] bg-gold px-1.5 py-px text-[9px] font-bold tracking-wide text-ink">
+                          {row.note}
+                        </span>
+                      ) : null}
+                    </span>
                   </span>
                 </td>
                 <td className="px-2 py-1.5 text-right font-mono text-[12px] font-semibold">

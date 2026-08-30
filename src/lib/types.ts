@@ -4,6 +4,9 @@ export type Team = {
   name: string;
   shortName: string;
   color: string;
+  city?: string;
+  pool?: "A" | "B";
+  gender?: "men" | "women";
 };
 
 export type MatchStatus = "live" | "final" | "upcoming";
@@ -35,6 +38,7 @@ export type StandingRow = {
   pa: number;
   pts: number;
   form: FormResult[];
+  note?: string;
 };
 
 export type BracketEntrant = {

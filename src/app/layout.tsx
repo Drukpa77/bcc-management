@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import { Barlow, Barlow_Condensed, JetBrains_Mono } from "next/font/google";
-import { Flags } from "@/components/brand/flags";
-import { PublicFooter } from "@/components/public/public-footer";
-import { PublicNav } from "@/components/public/public-nav";
 import "./globals.css";
 
 const barlow = Barlow({
@@ -38,11 +35,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${barlow.variable} ${barlowCondensed.variable} ${jetbrains.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-paper font-sans text-ink-2">
-        <Flags />
-        <PublicNav />
-        <main className="flex flex-1 flex-col">{children}</main>
-        <PublicFooter />
+      <body className="flex min-h-dvh flex-col bg-paper font-sans text-ink-2">
+        {children}
       </body>
     </html>
   );
