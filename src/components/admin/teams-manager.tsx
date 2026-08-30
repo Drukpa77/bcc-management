@@ -219,32 +219,30 @@ export function TeamsManager() {
                       <span className="rounded-full bg-[#EEECE6] px-2.5 py-1 text-[11px] text-muted">Unassigned</span>
                     )}
                   </div>
-                  <div className="mt-4 flex items-center gap-2">
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
                     <Link
                       href={`/admin/teams/${team.id}`}
-                      className="inline-flex h-10 flex-1 items-center justify-center rounded-xl bg-ink text-[13px] font-semibold text-white transition hover:bg-ink-2"
+                      className="inline-flex h-10 min-w-[7.5rem] flex-1 items-center justify-center rounded-xl bg-ink px-3 text-[13px] font-semibold text-white transition hover:bg-ink-2"
                     >
                       Open roster
                     </Link>
                     <AdminButton
                       type="button"
                       variant="secondary"
-                      className="h-10 w-10 px-0"
-                      title="Edit team"
-                      aria-label={`Edit ${team.name}`}
+                      className="h-10 min-w-[5.75rem] px-3"
                       onClick={() => openEdit(team)}
                     >
                       <PencilIcon />
+                      Edit
                     </AdminButton>
                     <AdminButton
                       type="button"
-                      variant="ghost"
-                      className="h-10 w-10 px-0 text-loss hover:bg-[#FDECEC]"
-                      title="Delete team"
-                      aria-label={`Delete ${team.name}`}
+                      variant="danger"
+                      className="h-10 min-w-[5.75rem] px-3"
                       onClick={() => setPendingDelete(team)}
                     >
                       <TrashIcon />
+                      Delete
                     </AdminButton>
                   </div>
                 </div>

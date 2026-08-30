@@ -209,9 +209,14 @@ export function SearchIcon() {
 
 export function PencilIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path d="M8.2 2.6 11.4 5.8 5 12.2H1.8V9l6.4-6.4Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="m7 3.8 3.2 3.2" stroke="currentColor" strokeWidth="1.4" />
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path
+        d="M10.6 3.2 14.8 7.4 6.4 15.8H2.2v-4.2L10.6 3.2Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path d="m9 4.8 4.2 4.2" stroke="currentColor" strokeWidth="1.8" />
     </svg>
   );
 }
@@ -231,8 +236,14 @@ export function FlashBanner({ message, onDismiss }: { message: string; onDismiss
 
 export function TrashIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path d="M2.5 4h9M5 4V2.6h4V4M3.4 4l.6 8h6l.6-8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path
+        d="M3.2 5h11.6M6.4 5V3.2h5.2V5M4.4 5l.8 10.2h7.6L13.6 5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
