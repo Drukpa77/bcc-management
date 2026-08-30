@@ -1,7 +1,7 @@
 export const federation = {
   shortName: "BCC",
-  name: "BCC Basketball Federation",
-  tagline: "The governing body of the game",
+  name: "Bhutanese Basketball Cup",
+  tagline: "The national basketball cup",
 };
 
 export const competitions = [

@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
+import { CourtArcs } from "@/components/brand/court-arcs";
 import { MountainSilhouette } from "@/components/brand/mountain-silhouette";
+import { PubWrap } from "@/components/public/public-primitives";
 
 type PageHeaderProps = {
   kicker: string;
@@ -11,19 +13,22 @@ type PageHeaderProps = {
 export function PageHeader({
   kicker,
   title,
-  mountains = false,
+  mountains = true,
   children,
 }: PageHeaderProps) {
   return (
-    <div className="dhdr relative overflow-hidden bg-ink px-4 py-5 text-white md:px-5">
-      {mountains ? <MountainSilhouette variant="compact" /> : null}
-      <p className="relative font-display text-[11px] font-bold tracking-[0.22em] text-gold uppercase">
-        {kicker}
-      </p>
-      <h1 className="relative mt-1 font-display text-[26px] leading-none font-extrabold tracking-[0.01em] uppercase md:text-[32px]">
-        {title}
-      </h1>
-      {children}
+    <div className="pub-hero px-0 pt-6 pb-7 text-white sm:pt-8 sm:pb-8 md:pt-10 md:pb-9">
+      <span className="pub-grain" />
+      <CourtArcs />
+      {mountains ? <MountainSilhouette /> : null}
+      <PubWrap className="relative">
+        <p className="font-display text-[11px] font-bold tracking-[0.24em] text-gold uppercase">{kicker}</p>
+        <h1 className="pub-page-title mt-2">
+          {title}
+        </h1>
+        <div className="pub-rule mt-4" />
+        {children}
+      </PubWrap>
     </div>
   );
 }

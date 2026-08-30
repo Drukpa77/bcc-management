@@ -5,10 +5,11 @@ type ChipProps = {
   href?: string;
   active?: boolean;
   live?: boolean;
+  onClick?: () => void;
   children: ReactNode;
 };
 
-export function Chip({ href, active, live, children }: ChipProps) {
+export function Chip({ href, active, live, onClick, children }: ChipProps) {
   const className = `inline-flex rounded-full border px-2.5 py-0.5 text-[12px] font-semibold whitespace-nowrap ${
     live
       ? "border-live text-live"
@@ -22,6 +23,14 @@ export function Chip({ href, active, live, children }: ChipProps) {
       <Link href={href} className={className}>
         {children}
       </Link>
+    );
+  }
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={className}>
+        {children}
+      </button>
     );
   }
 

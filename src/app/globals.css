@@ -39,10 +39,33 @@
   --font-mono: var(--font-jetbrains);
 }
 
+:root {
+  --pub-nav-height: calc(4.25rem + env(safe-area-inset-top, 0px));
+  --pub-gutter: 1rem;
+  --admin-bar-height: 3.25rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --pub-gutter: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --pub-gutter: 2rem;
+  }
+}
+
+html {
+  overflow-x: clip;
+}
+
 body {
   background: var(--paper);
   color: var(--ink-2);
   font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: clip;
 }
 
 ::selection {
@@ -121,6 +144,16 @@ body {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), inset 0 0 0 6px #f0b429;
 }
 
+.wheel-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.wheel-spinning {
+  transition: transform 4s cubic-bezier(0.12, 0.65, 0.08, 1);
+}
+
 .hub {
   position: absolute;
   inset: 50% auto auto 50%;
@@ -165,4 +198,201 @@ body {
   flex: none;
   border-top: 1.5px solid #c9b48a;
   align-self: center;
+}
+
+@keyframes admin-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes admin-slide-in {
+  from {
+    transform: translateX(28px);
+    opacity: 0.4;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes admin-pop {
+  from {
+    transform: translateY(10px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.admin-overlay {
+  animation: admin-fade 180ms ease-out;
+}
+
+.admin-drawer {
+  animation: admin-slide-in 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.admin-dialog {
+  animation: admin-pop 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-overlay,
+  .admin-drawer,
+  .admin-dialog {
+    animation: none;
+  }
+}
+
+/* Public site — Himalayan court */
+.pub-grain {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.18) 0.6px, transparent 0.8px);
+  background-size: 3px 3px;
+}
+
+.pub-hero {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(ellipse 80% 70% at 90% -10%, rgba(232, 97, 28, 0.28), transparent 55%),
+    radial-gradient(ellipse 50% 50% at 0% 100%, rgba(240, 180, 41, 0.1), transparent 50%),
+    linear-gradient(145deg, #161b26 0%, #1c2434 48%, #25304a 100%);
+}
+
+.pub-hero .mtns {
+  opacity: 0.45;
+}
+
+.pub-rule {
+  height: 2px;
+  width: 48px;
+  background: linear-gradient(90deg, #f0b429, transparent);
+}
+
+.pub-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 0 rgba(22, 27, 38, 0.04), 0 18px 40px -28px rgba(22, 27, 38, 0.35);
+  outline: 1px solid #e8e4da;
+}
+
+@media (min-width: 768px) {
+  .pub-card {
+    border-radius: 20px;
+  }
+}
+
+.pub-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: var(--pub-gutter);
+}
+
+.pub-display {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  font-size: clamp(1.75rem, 7vw, 4.25rem);
+}
+
+.pub-page-title {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 0.92;
+  text-transform: uppercase;
+  font-size: clamp(1.7rem, 5.6vw, 3rem);
+}
+
+.pub-tabs {
+  display: flex;
+  gap: 0.25rem;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.pub-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.pub-sticky-sub {
+  position: sticky;
+  top: var(--pub-nav-height);
+  z-index: 40;
+}
+
+.pub-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.pub-site-header {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.pub-site-footer {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 379px) {
+  .vs-mark {
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+  }
+}
+
+.vs-mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: #161b26;
+  color: #f0b429;
+  font-family: var(--font-barlow-condensed), sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+@keyframes pub-rise {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.pub-rise {
+  animation: pub-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pub-rise {
+    animation: none;
+  }
 }

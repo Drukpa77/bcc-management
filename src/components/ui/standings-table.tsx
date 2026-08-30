@@ -27,8 +27,9 @@ export function StandingsTable({
   className = "",
 }: StandingsTableProps) {
   return (
-    <div className={`overflow-x-auto rounded-lg border border-line bg-card ${className}`}>
-      <table className="w-full min-w-[640px] border-collapse text-left text-[13px]">
+    <div className={`pub-scroll rounded-lg border border-line bg-card ${className}`}>
+      <p className="px-3 pt-2 text-[11px] text-muted md:hidden">Swipe to see the full table</p>
+      <table className="w-full min-w-[560px] border-collapse text-left text-[13px] md:min-w-[640px]">
         <thead>
           <tr className="bg-ink text-[#AEB6C2]">
             <th
@@ -78,6 +79,9 @@ export function StandingsTable({
         <tbody>
           {rows.map((row) => {
             const team = teams[row.teamId];
+            if (!team) {
+              return null;
+            }
             const qualified = row.pos <= qualifyCount;
             const difference = pd(row);
             return (

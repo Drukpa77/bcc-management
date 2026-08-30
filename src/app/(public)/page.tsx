@@ -1,234 +1,188 @@
 import Link from "next/link";
 import { CourtArcs } from "@/components/brand/court-arcs";
 import { MountainSilhouette } from "@/components/brand/mountain-silhouette";
-import { LiveMatchCard } from "@/components/public/live-match-card";
-import { Badge } from "@/components/ui/badge";
-import { FixtureRow } from "@/components/ui/fixture-row";
+import { NextMatchCard } from "@/components/public/next-match-card";
+import { PublicMatchRow } from "@/components/public/match-row";
+import { EmptyPanel, PubWrap, SectionHeading } from "@/components/public/public-primitives";
 import { TeamTile } from "@/components/ui/team-tile";
-import {
-  getTeam,
-  liveMatch,
-  poolAStandings,
-  poolBStandings,
-  recentResults,
-  upcomingFixtures,
-} from "@/lib/tournament";
+import { findTeam } from "@/lib/app-store";
+import { isOfficialResult } from "@/lib/tournament-engine";
+import { loadPublicCompetition } from "@/lib/load-public-competition";
+import type { StandingRow } from "@/lib/types";
 
 function PoolLeaders({
   title,
   rows,
+  storeFind,
 }: {
   title: string;
-  rows: typeof poolAStandings;
+  rows: StandingRow[];
+  storeFind: (id: string) => ReturnType<typeof findTeam>;
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-card">
-      <div className="flex items-center justify-between rounded-t-lg bg-ink px-2.5 py-1.5 text-gold">
-        <b className="font-display text-[11px] tracking-[0.15em]">{title}</b>
-        <span className="text-[11px] text-[#7A828F]">P · W-L · PTS</span>
+    <div className="pub-card overflow-hidden">
+      <div className="flex items-center justify-between bg-ink px-3.5 py-2.5 text-gold">
+        <b className="font-display text-[12px] tracking-[0.16em]">{title}</b>
+        <span className="font-mono text-[10px] text-[#7A828F]">W-L · PTS</span>
       </div>
-      <div className="flex flex-col gap-1.5 px-2.5 py-2">
-        {rows.slice(0, 2).map((row) => {
-          const team = getTeam(row.teamId);
+      <div className="flex flex-col">
+        {rows.slice(0, 3).map((row) => {
+          const team = storeFind(row.teamId);
+          if (!team) {
+            return null;
+          }
           return (
-            <div key={row.teamId} className="flex items-center justify-between gap-2 text-[13px]">
-              <span className="flex items-center gap-2">
-                <span className="inline-block w-4 font-display text-[13px] font-bold">
-                  {row.pos}
-                </span>
+            <Link
+              key={row.teamId}
+              href={`/teams/${team.id}`}
+              className="flex items-center justify-between gap-2 border-t border-[#F0EEE8] px-3.5 py-2.5 first:border-t-0 hover:bg-[#FBF8F2]"
+            >
+              <span className="flex min-w-0 items-center gap-2.5 text-[13px]">
+                <span className="w-4 font-display text-[15px] font-extrabold">{row.pos}</span>
                 <TeamTile team={team} />
-                {team.name}
+                <span className="truncate font-semibold">{team.name}</span>
               </span>
-              <span className="font-mono text-[11px] font-bold">
+              <span className="font-mono text-[12px] font-bold">
                 {row.won}-{row.lost} · {row.pts}
               </span>
-            </div>
+            </Link>
           );
         })}
+        {rows.length === 0 ? <p className="px-3.5 py-4 text-[13px] text-muted">No results yet</p> : null}
       </div>
     </div>
   );
 }
 
-export default function Home() {
-  const home = getTeam(liveMatch.homeId);
-  const away = getTeam(liveMatch.awayId);
+export default async function Home() {
+  const { store, league, view } = await loadPublicCompetition();
+  const featured = view?.fixtures.find((fixture) => fixture.status === "upcoming" && !isOfficialResult(fixture));
+  const home = featured ? findTeam(store, featured.homeId) : undefined;
+  const away = featured ? findTeam(store, featured.awayId) : undefined;
+  const upcoming = (view?.fixtures ?? []).filter((fixture) => !isOfficialResult(fixture)).slice(0, 4);
+  const recent = (view?.fixtures ?? []).filter(isOfficialResult).slice(-3).reverse();
+  const played = (view?.fixtures ?? []).filter(isOfficialResult).length;
+  const total = view?.fixtures.length ?? 0;
 
   return (
     <>
-      <section className="hero px-4 pb-8 pt-6 md:px-5 md:pb-10 md:pt-8">
+      <section className="pub-hero px-0 pt-8 pb-10 sm:pt-10 sm:pb-12 md:pt-14 md:pb-16">
+        <span className="pub-grain" />
         <CourtArcs />
         <MountainSilhouette />
-        <div className="relative mx-auto flex max-w-[1120px] flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
-          <div className="flex min-w-0 flex-1 flex-col gap-2.5">
-            <p className="font-display text-[11px] font-bold tracking-[0.22em] text-gold uppercase">
-              <span className="md:hidden">10–26 Sept 2026 · Thimphu</span>
-              <span className="hidden md:inline">
-                10 – 26 September 2026 · Changlimithang Court, Thimphu
-              </span>
+        <div className="pub-wrap relative flex flex-col gap-8 lg:flex-row lg:items-end lg:gap-12">
+          <div className="flex min-w-0 flex-1 flex-col">
+            <p className="font-display text-[11px] font-bold tracking-[0.22em] text-gold uppercase sm:text-[12px] sm:tracking-[0.26em]">
+              {league ? `${league.season} · ${league.location}` : "Bhutanese Basketball Cup"}
             </p>
-            <h1 className="font-display text-[28px] leading-none font-extrabold tracking-[0.01em] text-white uppercase md:text-[44px]">
-              <span className="md:hidden">National Basketball Championship 2026</span>
-              <span className="hidden md:inline">
-                Bhutan National Basketball
-                <br />
-                Championship 2026
-              </span>
+            <h1 className="pub-display mt-3 text-white">
+              {league?.name ?? "Bhutanese Basketball Cup"}
             </h1>
-            <p className="hidden max-w-[340px] text-[15px] leading-6 text-nav-muted md:block">
-              10 men&apos;s teams across two pools. 6 women&apos;s teams, round
-              robin. One champion of the Kingdom.
+            <div className="pub-rule mt-5" />
+            <p className="mt-4 max-w-[420px] text-[16px] leading-7 text-nav-muted">
+              Live tables and the knockout bracket, drawn from one official scorebook at Changlimithang.
             </p>
-            <div className="mt-2 flex gap-2">
+            <div className="mt-6 flex flex-wrap gap-2.5">
               <Link
                 href="/fixtures"
-                className="inline-flex items-center rounded-[5px] bg-saffron px-4 py-2 text-[13px] font-semibold text-white shadow-[0_2px_6px_rgba(232,97,28,0.35)]"
+                className="inline-flex items-center rounded-full bg-saffron px-5 py-2.5 text-[13px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(232,97,28,0.8)]"
               >
-                <span className="md:hidden">Fixtures</span>
-                <span className="hidden md:inline">Today&apos;s Fixtures</span>
+                View fixtures
               </Link>
               <Link
-                href="/bracket"
-                className="inline-flex items-center rounded-[5px] border border-white/35 px-4 py-2 text-[13px] font-semibold text-white"
+                href="/standings"
+                className="inline-flex items-center rounded-full border border-white/25 px-5 py-2.5 text-[13px] font-semibold text-white hover:border-gold hover:text-gold"
               >
-                <span className="md:hidden">Bracket</span>
-                <span className="hidden md:inline">View Bracket</span>
+                Standings
               </Link>
             </div>
           </div>
-          <div className="hidden lg:block">
-            <LiveMatchCard fixture={liveMatch} home={home} away={away} />
+          <div className="w-full lg:w-[320px]">
+            {featured && home && away ? (
+              <NextMatchCard fixture={featured} home={home} away={away} />
+            ) : (
+              <div className="rounded-2xl border border-white/12 bg-white/6 px-5 py-6">
+                <p className="font-display text-[11px] font-bold tracking-[0.18em] text-gold uppercase">Season desk</p>
+                <p className="mt-2 font-display text-[20px] font-extrabold uppercase">Fixtures coming soon</p>
+                <p className="mt-1 text-[13px] text-nav-muted">The pool draw sets the opening night at Changlimithang.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      <div className="mx-auto w-full max-w-[1120px] px-4 py-4 md:hidden">
-        <LiveMatchCard
-          fixture={liveMatch}
-          home={home}
-          away={away}
-          variant="panel"
-        />
+      <div className="border-b border-line bg-white">
+        <PubWrap className="grid grid-cols-2 gap-px bg-line md:grid-cols-4">
+          {[
+            ["Competition", league?.name ?? "TBC"],
+            ["Clubs", `${league?.teamIds.length ?? 0} teams`],
+            ["Scorebook", total ? `${played} / ${total} played` : "Awaiting fixtures"],
+            ["Stage", view?.bracketReady ? "Knockout" : "Pool round"],
+          ].map(([label, value]) => (
+            <div key={label} className="bg-white px-4 py-4 md:px-5">
+              <p className="text-[10px] font-bold tracking-[0.16em] text-[#8A909C] uppercase">{label}</p>
+              <p className="mt-1 truncate font-display text-[18px] font-extrabold uppercase">{value}</p>
+            </div>
+          ))}
+        </PubWrap>
       </div>
 
-      <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-4 py-5 md:flex-row md:items-start md:gap-4 md:px-5 md:py-6">
-        <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display text-[17px] font-bold tracking-[0.05em] uppercase">
-              <span className="md:hidden">Upcoming</span>
-              <span className="hidden md:inline">Upcoming Matches</span>
-            </h2>
-            <Link
-              href="/fixtures"
-              className="hidden text-[12px] text-saffron md:inline"
-            >
-              All fixtures →
-            </Link>
-          </div>
-          <div className="overflow-hidden rounded-lg border border-line bg-card">
-            <div className="flex items-center justify-between bg-[#F1EFE9] px-3 py-1.5 text-[12px]">
-              <b className="hidden md:inline">SATURDAY, 12 SEPTEMBER</b>
-              <b className="md:hidden">SAT 12 SEP</b>
-              <span className="text-muted">
-                <span className="md:hidden">Changlimithang</span>
-                <span className="hidden md:inline">Changlimithang Court</span>
-              </span>
-            </div>
-            <div className="flex flex-col gap-2.5 px-3 py-2.5">
-              {upcomingFixtures.map((fixture) => (
-                <FixtureRow
+      <PubWrap className="flex flex-col gap-8 py-7 sm:gap-10 sm:py-8 lg:flex-row lg:items-start lg:py-12">
+        <div className="min-w-0 flex-1">
+          <SectionHeading kicker="Schedule" title="Upcoming matches" href="/fixtures" action="Full fixtures" />
+          {upcoming.length === 0 ? (
+            <EmptyPanel title="No upcoming fixtures" copy="Generate the pool schedule after the draw, or check recent results." />
+          ) : (
+            <div className="pub-card divide-y divide-[#F0EEE8] overflow-hidden">
+              {upcoming.map((fixture) => (
+                <PublicMatchRow
                   key={fixture.id}
                   fixture={fixture}
-                  home={getTeam(fixture.homeId)}
-                  away={getTeam(fixture.awayId)}
+                  home={findTeam(store, fixture.homeId)}
+                  away={findTeam(store, fixture.awayId)}
                 />
               ))}
             </div>
-          </div>
+          )}
 
-          <div className="mt-2 hidden items-center justify-between md:flex">
-            <h2 className="font-display text-[17px] font-bold tracking-[0.05em] uppercase">
-              Recent Results
-            </h2>
-            <Link href="/results" className="text-[12px] text-saffron">
-              All results →
-            </Link>
-          </div>
-          <div className="hidden gap-2 md:grid md:grid-cols-3">
-            {recentResults.map((result) => {
-              const resultHome = getTeam(result.homeId);
-              const resultAway = getTeam(result.awayId);
-              return (
-                <article
-                  key={result.id}
-                  className="rounded-lg border border-line bg-card px-3 py-2.5"
-                >
-                  <div className="flex items-center justify-between">
-                    <Badge status="final" />
-                    <span className="text-[11px] text-muted">
-                      {result.dateLabel} · {result.group}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <TeamTile team={resultHome} />
-                      <b>{resultHome.name}</b>
-                    </span>
-                    <b className="font-mono text-saffron">{result.homeScore}</b>
-                  </div>
-                  <div className="mt-1 flex items-center justify-between text-muted">
-                    <span className="flex items-center gap-2">
-                      <TeamTile team={resultAway} />
-                      {resultAway.name}
-                    </span>
-                    <span className="font-mono">{result.awayScore}</span>
-                  </div>
-                </article>
-              );
-            })}
+          <div className="mt-10">
+            <SectionHeading kicker="Scorebook" title="Recent results" href="/results" action="All results" />
+            {recent.length === 0 ? (
+              <EmptyPanel title="No finals yet" copy="Published scores will land here the moment a match is signed off." />
+            ) : (
+              <div className="pub-card divide-y divide-[#F0EEE8] overflow-hidden">
+                {recent.map((result) => (
+                  <PublicMatchRow
+                    key={result.id}
+                    fixture={result}
+                    home={findTeam(store, result.homeId)}
+                    away={findTeam(store, result.awayId)}
+                    official
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        <aside className="flex w-full flex-col gap-2 md:w-[250px]">
-          <h2 className="font-display text-[17px] font-bold tracking-[0.05em] uppercase">
-            Pool Leaders
-          </h2>
-          <div className="grid grid-cols-2 gap-2 md:hidden">
-            <div className="rounded-lg border border-line bg-card p-2">
-              <span className="text-[11px] text-muted">POOL A</span>
-              <div className="mt-1 flex items-center gap-1.5">
-                <TeamTile team={getTeam("thw")} size="sm" />
-                <b className="text-[12px]">Warriors 4-1</b>
-              </div>
-            </div>
-            <div className="rounded-lg border border-line bg-card p-2">
-              <span className="text-[11px] text-muted">POOL B</span>
-              <div className="mt-1 flex items-center gap-1.5">
-                <TeamTile team={getTeam("pdr")} size="sm" />
-                <b className="text-[12px]">Dragons 4-1</b>
-              </div>
-            </div>
-          </div>
-          <div className="hidden flex-col gap-2 md:flex">
-            <PoolLeaders title="MEN'S POOL A" rows={poolAStandings} />
-            <PoolLeaders title="MEN'S POOL B" rows={poolBStandings} />
-            <div className="rounded-lg bg-[linear-gradient(120deg,#161B26,#25304a)] p-3.5 text-white">
-              <p className="font-display text-[11px] font-bold tracking-[0.22em] text-gold uppercase">
-                Playoff picture
-              </p>
-              <p className="mt-1 mb-2 font-display text-[15px] font-bold uppercase">
-                Quarter Finals begin 20 Sept
-              </p>
-              <Link
-                href="/bracket"
-                className="inline-flex rounded-[5px] border border-white/35 px-2 py-0.5 text-[12px] font-semibold text-white"
-              >
-                View Bracket →
-              </Link>
-            </div>
+        <aside className="flex w-full flex-col gap-4 lg:w-[300px]">
+          <SectionHeading kicker="Tables" title="Pool leaders" href="/standings" action="Full table" />
+          <PoolLeaders title="POOL A" rows={view?.poolAStandings ?? []} storeFind={(id) => findTeam(store, id)} />
+          <PoolLeaders title="POOL B" rows={view?.poolBStandings ?? []} storeFind={(id) => findTeam(store, id)} />
+          <div className="overflow-hidden rounded-2xl bg-[linear-gradient(155deg,#161B26,#2a3550)] p-5 text-white">
+            <p className="font-display text-[11px] font-bold tracking-[0.22em] text-gold uppercase">Playoff picture</p>
+            <p className="mt-2 font-display text-[20px] leading-tight font-extrabold uppercase">
+              {view?.bracketReady ? "The knockout bracket is set" : "Seeds lock after the pool stage"}
+            </p>
+            <Link
+              href="/bracket"
+              className="mt-4 inline-flex rounded-full border border-white/25 px-3.5 py-1.5 text-[12px] font-semibold text-white hover:border-gold hover:text-gold"
+            >
+              Open bracket
+            </Link>
           </div>
         </aside>
-      </div>
+      </PubWrap>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Barlow, Barlow_Condensed, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -20,13 +20,23 @@ const jetbrains = JetBrains_Mono({
   weight: ["600", "700", "800"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   title: {
-    default: "Bhutan National Basketball Championship 2026",
-    template: "%s · Bhutan Basketball",
+    default: "Bhutanese Basketball Cup",
+    template: "%s · Bhutanese Basketball Cup",
   },
   description:
-    "Official tournament platform of the Bhutan Basketball Federation — fixtures, standings, live scores, and the road to Changlimithang.",
+    "Official tournament platform of the Bhutanese Basketball Cup — fixtures, results, standings, and the road to Changlimithang.",
+  icons: {
+    icon: "/Logo.png",
+    apple: "/Logo.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

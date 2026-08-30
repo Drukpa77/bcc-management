@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("admin")
+  createdAt    DateTime @default(now())
+}
+
+model Setting {
+  id             String  @id @default("default")
+  activeLeagueId String?
+}
+
+model Team {
+  id        String       @id
+  code      String
+  name      String
+  shortName String
+  color     String
+  city      String?
+  gender    String?
+  logo      String?
+  createdAt DateTime     @default(now())
+  leagues   LeagueTeam[]
+  players   Player[]
+}
+
+model Player {
+  id        String  @id @default(cuid())
+  teamId    String
+  name      String
+  number    Int
+  position  String
+  age       Int?
+  height    String?
+  image     String?
+  captain   Boolean @default(false)
+  status    String  @default("active")
+  team      Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, number])
+}
+
+model League {
+  id           String                @id
+  name         String
+  season       String
+  location     String
+  gender       String
+  format       String
+  status       String
+  createdAt    DateTime              @default(now())
+  teams        LeagueTeam[]
+  draw         Draw?
+  fixtures     Fixture[]
+  adjustments  StandingAdjustment[]
+}
+
+model LeagueTeam {
+  leagueId String
+  teamId   String
+  league   League @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  team     Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@id([leagueId, teamId])
+}
+
+model Draw {
+  id                  String           @id @default(cuid())
+  leagueId            String           @unique
+  status              String
+  confirmedAt         DateTime?
+  fixturesGeneratedAt DateTime?
+  league              League           @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  assignments         DrawAssignment[]
+}
+
+model DrawAssignment {
+  id     String @id @default(cuid())
+  drawId String
+  teamId String
+  pool   String
+  spin   Int
+  draw   Draw   @relation(fields: [drawId], references: [id], onDelete: Cascade)
+
+  @@unique([drawId, teamId])
+}
+
+model Fixture {
+  id              String        @id
+  leagueId        String
+  homeId          String
+  awayId          String
+  time            String
+  dateLabel       String
+  venue           String
+  groupName       String
+  status          String
+  homeScore       Int?
+  awayScore       Int?
+  period          String?
+  clock           String?
+  stage           String        @default("POOL")
+  pool            String?
+  round           Int?
+  published       Boolean       @default(false)
+  notes           String?
+  mvp             String?
+  overtime        Boolean       @default(false)
+  winnerId        String?
+  publishedAt     DateTime?
+  updatedById     String?
+  homePlaceholder String?
+  awayPlaceholder String?
+  homeQ1          Int?
+  homeQ2          Int?
+  homeQ3          Int?
+  homeQ4          Int?
+  awayQ1          Int?
+  awayQ2          Int?
+  awayQ3          Int?
+  awayQ4          Int?
+  league          League        @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  audits          ResultAudit[]
+}
+
+model StandingAdjustment {
+  id          String   @id @default(cuid())
+  leagueId    String
+  teamId      String
+  pointsDelta Int
+  reason      String
+  createdAt   DateTime @default(now())
+  createdById String?
+  league      League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+}
+
+model ResultAudit {
+  id           String   @id @default(cuid())
+  fixtureId    String
+  previousHome Int?
+  previousAway Int?
+  newHome      Int?
+  newAway      Int?
+  published    Boolean
+  createdAt    DateTime @default(now())
+  createdById  String?
+  fixture      Fixture  @relation(fields: [fixtureId], references: [id], onDelete: Cascade)
+}

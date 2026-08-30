@@ -31,7 +31,7 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <p className="mx-auto w-full max-w-6xl px-6 py-5 text-xs tracking-wide text-card/45">
-          © {new Date().getFullYear()} BCC Basketball Federation. All rights
+          © {new Date().getFullYear()} Bhutanese Basketball Cup. All rights
           reserved.
         </p>
       </div>

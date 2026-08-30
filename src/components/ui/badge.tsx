@@ -5,6 +5,8 @@ const styles = {
   live: "bg-live text-white",
   final: "bg-[#E4E7EC] text-[#4A5262]",
   upcoming: "border border-[#AEB6C2] bg-white text-[#5B6472]",
+  postponed: "border border-[#F2DFAE] bg-[#FEF9EE] text-[#92400E]",
+  cancelled: "bg-[#E4E7EC] text-[#4A5262]",
   registration: "bg-[#DCEBDD] text-[#276438]",
   done: "bg-ink text-gold",
 } as const;
@@ -15,6 +17,8 @@ const labels: Record<BadgeTone, string> = {
   live: "LIVE",
   final: "FINAL",
   upcoming: "UPCOMING",
+  postponed: "POSTPONED",
+  cancelled: "CANCELLED",
   registration: "REGISTRATION OPEN",
   done: "COMPLETED",
 };
