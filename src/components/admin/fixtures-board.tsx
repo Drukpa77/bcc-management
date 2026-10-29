@@ -184,6 +184,9 @@ export function FixturesBoard() {
     return <p className="px-1 py-12 text-center text-[13px] text-muted">Create a competition before adding matches.</p>;
   }
 
+  const leagueId = league.id;
+  const leagueVenue = league.location;
+
   function patch(id: string, update: Partial<Draft>, isNew = false) {
     if (isNew) {
       setCreating((current) => (current && current.id === id ? { ...current, ...update } : current));
@@ -191,7 +194,7 @@ export function FixturesBoard() {
     }
     setDrafts((current) => {
       const original = rows.find((item) => item.id === id);
-      const base = current[id] ?? (original ? toDraft(original) : emptyDraft(league.location));
+      const base = current[id] ?? (original ? toDraft(original) : emptyDraft(leagueVenue));
       return { ...current, [id]: { ...base, ...update } };
     });
   }
@@ -201,7 +204,7 @@ export function FixturesBoard() {
     setError("");
     try {
       if (isNew) {
-        await run(() => createFixtureAction(league.id, toInput(draft)));
+        await run(() => createFixtureAction(leagueId, toInput(draft)));
         setCreating(null);
         setFlash("Match added to the schedule.");
       } else {
