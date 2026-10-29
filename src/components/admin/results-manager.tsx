@@ -82,12 +82,12 @@ export function ResultsManager() {
     setConflict("");
   }
 
-  async function save(mode: "draft" | "publish", nextForce = force) {
+  async function save(mode: "draft" | "publish") {
     if (!editing) {
       return;
     }
     setBusy(true);
-    const result = await saveResultAction(editing.id, form, mode, { forceQualificationChange: nextForce });
+    const result = await saveResultAction(editing.id, form, mode);
     if (!result.ok) {
       setConflict(result.message);
       if (result.qualificationConflict) {
@@ -113,7 +113,7 @@ export function ResultsManager() {
         <div>
           <p className="text-[11px] font-bold tracking-[0.2em] text-saffron uppercase">Results management</p>
           <p className="mt-1 max-w-xl text-[15px] leading-relaxed text-muted">
-            Publish a final score and the {league.name} table, qualification, and bracket update together.
+            Publish a final score and the {league.name} table updates from that score. Knockout matches stay as you set them on Fixtures.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -256,7 +256,7 @@ export function ResultsManager() {
           if (conflict) {
             setForce(true);
           }
-          void save("publish", Boolean(conflict) || force);
+          void save("publish");
         }}
       />
 

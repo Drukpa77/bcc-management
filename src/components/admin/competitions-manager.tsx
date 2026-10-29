@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import { useAppStore } from "@/components/admin/use-app-store";
 import { AdminButton, Drawer, Field, PlusIcon, fieldClass } from "@/components/admin/admin-ui";
 import { createLeagueAction, setActiveLeagueAction } from "@/app/actions/tournament";
+import { LeagueStatusSelect } from "@/components/admin/league-status-select";
 import { FORMAT_LABEL, getDraw, makeId, type LeagueFormat, type LeagueGender } from "@/lib/app-store";
 import { buildLeagueView } from "@/lib/tournament-engine";
 
@@ -62,7 +62,7 @@ export function CompetitionsManager() {
         <div>
           <p className="text-[11px] font-bold tracking-[0.2em] text-saffron uppercase">Cup calendar</p>
           <p className="mt-1 max-w-xl text-[15px] leading-relaxed text-muted">
-            {store.leagues.length} competition{store.leagues.length === 1 ? "" : "s"}. Open one to set the roster, then draw pools or generate fixtures.
+            {store.leagues.length} competition{store.leagues.length === 1 ? "" : "s"}. Officials set the roster, pools, fixtures, and whether the cup is live.
           </p>
         </div>
         <AdminButton
@@ -109,7 +109,7 @@ export function CompetitionsManager() {
                         {league.season} · {league.location}
                       </p>
                     </div>
-                    <Badge tone={league.status} />
+                    <LeagueStatusSelect leagueId={league.id} status={league.status} />
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-1.5">
@@ -124,7 +124,9 @@ export function CompetitionsManager() {
                     </span>
                     {league.format === "pools" ? (
                       <span className="rounded-full bg-paper px-2.5 py-1 text-[11px] font-semibold text-[#5B6472]">
-                        {draw.status === "confirmed" ? "Pools locked" : draw.status === "idle" ? "No draw yet" : "Draw in progress"}
+                        {draw.poolA.length + draw.poolB.length
+                          ? `Pools ${draw.poolA.length}/${draw.poolB.length}`
+                          : "Pools not set"}
                       </span>
                     ) : null}
                   </div>

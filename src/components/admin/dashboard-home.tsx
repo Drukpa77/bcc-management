@@ -58,9 +58,9 @@ export function DashboardHome() {
 
       <div className="rounded-3xl bg-white p-5 ring-1 ring-[#E8E4DA]">
         <p className="text-[13px] font-semibold">
-          {view.bracketReady
-            ? "Knockout bracket is seeded from the final pool tables."
-            : `Knockout bracket will generate after ${view.remainingPoolMatches} remaining pool match${view.remainingPoolMatches === 1 ? "" : "es"}.`}
+          {view.league.status === "live"
+            ? "This competition is live on the public site. Set a fixture to Live now when that match is on court."
+            : "Set public status to Live now when this tournament should appear as happening."}
         </p>
         {recent && home && away ? (
           <p className="mt-2 text-[14px] text-muted">

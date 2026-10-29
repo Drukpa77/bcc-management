@@ -26,6 +26,14 @@ export function FixtureGeneratorPanel() {
   const poolBGames = pairCount(draw.poolB.length);
 
   return (
+    <div className="space-y-3">
+      <p className="text-[14px] text-muted">
+        Optional helper. Officials can instead add each match by hand on{" "}
+        <Link href="/admin/fixtures" className="font-semibold text-saffron">
+          Fixtures
+        </Link>
+        .
+      </p>
     <div className="flex flex-col gap-2.5 lg:flex-row">
       <div className="w-full rounded-lg border border-line bg-white lg:w-[220px]">
         <div className="bg-[#F1EFE9] px-3 py-1.5 text-[11px] font-bold">GENERATION PLAN</div>
@@ -161,6 +169,7 @@ export function FixtureGeneratorPanel() {
           </table>
         )}
       </div>
+    </div>
     </div>
   );
 }

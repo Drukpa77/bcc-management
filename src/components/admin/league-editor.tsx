@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { TeamTile } from "@/components/ui/team-tile";
 import { useAppStore } from "@/components/admin/use-app-store";
 import { AdminButton, ConfirmDialog, PlusIcon } from "@/components/admin/admin-ui";
@@ -10,9 +9,8 @@ import {
   addTeamToLeagueAction,
   discardDrawAction,
   removeTeamFromLeagueAction,
-  setActiveLeagueAction,
-  startDrawAction,
 } from "@/app/actions/tournament";
+import { LeagueStatusSelect } from "@/components/admin/league-status-select";
 import {
   FORMAT_LABEL,
   availableTeams,
@@ -55,7 +53,7 @@ export function LeagueEditor({ leagueId }: { leagueId: string }) {
               {league.season} · {league.location} · {FORMAT_LABEL[league.format]}
             </p>
           </div>
-          <Badge tone={league.status} />
+          <LeagueStatusSelect leagueId={league.id} status={league.status} dark />
           <div className="text-right">
             <p className="font-mono text-[34px] leading-none font-extrabold text-gold">{inLeague.length}</p>
             <p className="mt-1 text-[11px] tracking-[0.14em] text-[#7A828F] uppercase">On roster</p>
@@ -66,36 +64,27 @@ export function LeagueEditor({ leagueId }: { leagueId: string }) {
       <div className="flex flex-wrap gap-2">
         {canDraw ? (
           <Link
-            href="/admin/draw"
+            href="/admin/pools"
             className="inline-flex h-11 items-center rounded-xl bg-saffron px-4 text-[13px] font-semibold text-white shadow-[0_8px_18px_rgba(232,97,28,0.22)]"
-            onClick={() => void run(() => startDrawAction(league.id))}
           >
-            Start pool draw
+            Edit pools
           </Link>
-        ) : league.format === "pools" ? (
-          <span className="inline-flex h-11 items-center rounded-xl border border-[#D8D3C8] px-4 text-[13px] text-muted">
-            Add at least two teams to draw
-          </span>
-        ) : (
-          <p className="inline-flex h-11 items-center text-[13px] text-muted">Round robin — generate fixtures once the roster is set.</p>
-        )}
+        ) : null}
         <Link
-          href="/admin/fixtures/generate"
+          href="/admin/fixtures"
           className="inline-flex h-11 items-center rounded-xl border border-[#D8D3C8] bg-white px-4 text-[13px] font-semibold hover:bg-paper"
-          onClick={() => void run(() => setActiveLeagueAction(league.id))}
         >
-          Fixture generator
+          Edit fixtures
         </Link>
         <Link
           href="/admin/results"
           className="inline-flex h-11 items-center rounded-xl border border-[#D8D3C8] bg-white px-4 text-[13px] font-semibold hover:bg-paper"
-          onClick={() => void run(() => setActiveLeagueAction(league.id))}
         >
           Results
         </Link>
         {draw.status !== "idle" ? (
           <AdminButton type="button" variant="ghost" className="text-loss hover:bg-[#FDECEC]" onClick={() => setDiscardOpen(true)}>
-            Discard draw
+            Clear pools
           </AdminButton>
         ) : null}
       </div>
@@ -146,7 +135,7 @@ export function LeagueEditor({ leagueId }: { leagueId: string }) {
           <div className="mt-3 space-y-1.5">
             {locked ? (
               <p className="rounded-2xl bg-paper px-3 py-4 text-[13px] text-muted">
-                The roster is locked while a draw is in progress or confirmed.
+                The roster is locked only while a live pool draw is on screen.
               </p>
             ) : available.length === 0 ? (
               <p className="rounded-2xl bg-paper px-3 py-4 text-[13px] text-muted">
@@ -178,10 +167,10 @@ export function LeagueEditor({ leagueId }: { leagueId: string }) {
 
       <ConfirmDialog
         open={discardOpen}
-        title="Discard this draw?"
-        body={`${league.name} will lose its pools. Teams stay in the league.`}
-        confirmLabel="Discard draw"
-        busyLabel="Discarding…"
+        title="Clear these pools?"
+        body={`${league.name} pool assignments will be removed. Fixtures and clubs stay as they are.`}
+        confirmLabel="Clear pools"
+        busyLabel="Clearing…"
         busy={busy}
         onCancel={() => setDiscardOpen(false)}
         onConfirm={() => {

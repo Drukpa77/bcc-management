@@ -10,7 +10,9 @@ import {
   pickSpin,
   type LeagueFormat,
   type LeagueGender,
+  type LeagueStatus,
 } from "@/lib/app-store";
+import type { MatchStage, MatchStatus } from "@/lib/types";
 import { normalizeImage } from "@/lib/media";
 import { loadTournamentStateFresh } from "@/lib/tournament-state";
 import { revalidateTournament } from "@/lib/revalidate-tournament";
@@ -215,7 +217,6 @@ export async function startDrawAction(leagueId: string) {
     return;
   }
 
-  await prisma.fixture.deleteMany({ where: { leagueId } });
   await prisma.draw.deleteMany({ where: { leagueId } });
   await prisma.draw.create({
     data: { leagueId, status: "drawing" },
@@ -268,7 +269,6 @@ export async function confirmDrawAction(leagueId: string) {
 
 export async function discardDrawAction(leagueId: string) {
   await requireAdmin();
-  await prisma.fixture.deleteMany({ where: { leagueId } });
   await prisma.draw.deleteMany({ where: { leagueId } });
   revalidateTournament();
 }
@@ -307,5 +307,137 @@ export async function generateFixturesAction(leagueId: string) {
     where: { leagueId },
     data: { fixturesGeneratedAt: new Date() },
   });
+  revalidateTournament();
+}
+
+export async function updateLeagueStatusAction(leagueId: string, status: LeagueStatus) {
+  await requireAdmin();
+  await prisma.league.update({ where: { id: leagueId }, data: { status } });
+  await setActive(leagueId);
+  revalidateTournament();
+}
+
+async function ensureManualDraw(leagueId: string) {
+  const existing = await prisma.draw.findUnique({
+    where: { leagueId },
+    include: { assignments: true },
+  });
+  if (existing) {
+    if (existing.status === "idle") {
+      await prisma.draw.update({
+        where: { id: existing.id },
+        data: { status: "confirmed", confirmedAt: existing.confirmedAt ?? new Date() },
+      });
+    }
+    return existing;
+  }
+  return prisma.draw.create({
+    data: { leagueId, status: "confirmed", confirmedAt: new Date() },
+    include: { assignments: true },
+  });
+}
+
+export async function assignTeamPoolAction(leagueId: string, teamId: string, pool: "A" | "B" | null) {
+  await requireAdmin();
+  const membership = await prisma.leagueTeam.findUnique({
+    where: { leagueId_teamId: { leagueId, teamId } },
+  });
+  if (!membership) {
+    throw new Error("That club is not in this competition.");
+  }
+
+  const draw = await ensureManualDraw(leagueId);
+  if (!pool) {
+    await prisma.drawAssignment.deleteMany({ where: { drawId: draw.id, teamId } });
+  } else {
+    const existing = draw.assignments.find((row) => row.teamId === teamId);
+    if (existing) {
+      await prisma.drawAssignment.update({ where: { id: existing.id }, data: { pool } });
+    } else {
+      const spin = Math.max(0, ...draw.assignments.map((row) => row.spin)) + 1;
+      await prisma.drawAssignment.create({
+        data: { drawId: draw.id, teamId, pool, spin },
+      });
+    }
+  }
+
+  if (draw.status !== "drawing") {
+    await prisma.draw.update({
+      where: { id: draw.id },
+      data: { status: "confirmed", confirmedAt: draw.confirmedAt ?? new Date() },
+    });
+  }
+
+  revalidateTournament();
+}
+
+export type FixtureWriteInput = {
+  homeId: string;
+  awayId: string;
+  dateLabel: string;
+  time: string;
+  venue: string;
+  groupName: string;
+  status: MatchStatus;
+  stage: MatchStage;
+  pool?: "A" | "B" | null;
+  round?: number | null;
+  homePlaceholder?: string | null;
+  awayPlaceholder?: string | null;
+};
+
+function fixtureWriteData(input: FixtureWriteInput) {
+  if (input.homeId && input.awayId && input.homeId === input.awayId) {
+    throw new Error("A team cannot play itself.");
+  }
+  return {
+    homeId: input.homeId,
+    awayId: input.awayId,
+    dateLabel: input.dateLabel.trim() || "TBC",
+    time: input.time.trim() || "TBC",
+    venue: input.venue.trim() || "TBC",
+    groupName: input.groupName.trim() || "Match",
+    status: input.status,
+    stage: input.stage,
+    pool: input.pool ?? null,
+    round: input.round ?? null,
+    homePlaceholder: input.homeId ? null : input.homePlaceholder?.trim() || "TBD",
+    awayPlaceholder: input.awayId ? null : input.awayPlaceholder?.trim() || "TBD",
+  };
+}
+
+export async function createFixtureAction(leagueId: string, input: FixtureWriteInput) {
+  await requireAdmin();
+  const id = makeId(`${leagueId}-match`);
+  const data = fixtureWriteData(input);
+  await prisma.fixture.create({
+    data: { id, leagueId, published: false, ...data },
+  });
+  await setActive(leagueId);
+  revalidateTournament();
+  return { id };
+}
+
+export async function updateFixtureAction(fixtureId: string, input: FixtureWriteInput) {
+  await requireAdmin();
+  const fixture = await prisma.fixture.findUnique({ where: { id: fixtureId } });
+  if (!fixture) {
+    throw new Error("Match not found.");
+  }
+  const data = fixtureWriteData(input);
+  await prisma.fixture.update({
+    where: { id: fixtureId },
+    data: {
+      ...data,
+      published: input.status === "final" ? fixture.published : false,
+      publishedAt: input.status === "final" ? fixture.publishedAt : null,
+    },
+  });
+  revalidateTournament();
+}
+
+export async function deleteFixtureAction(fixtureId: string) {
+  await requireAdmin();
+  await prisma.fixture.delete({ where: { id: fixtureId } });
   revalidateTournament();
 }

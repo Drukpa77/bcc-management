@@ -472,7 +472,7 @@ export function availableTeams(store: AppStore, league: League): Team[] {
 }
 
 export function rosterLocked(draw: LeagueDraw) {
-  return draw.status === "drawing" || draw.status === "complete" || draw.status === "confirmed";
+  return draw.status === "drawing";
 }
 
 export function pairCount(n: number) {
